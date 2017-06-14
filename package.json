@@ -25,16 +25,9 @@
     "postversion": "git push --follow-tags"
   },
   "devDependencies": {
-    "benchmark": "^2.1.4",
     "eslint": "^3.19.0",
-    "istanbul": "^0.4.5",
-    "marked": "^0.3.6"
-  },
-  "bin": {
-    "ospec": "./ospec/bin/ospec",
-    "bundle": "./bundler/bin/bundle"
-  },
-  "dependencies": {
+    "lerna": "^2.0.0-rc.5",
+    "marked": "^0.3.6",
     "@alrra/travis-scripts": "^3.0.1",
     "gh-pages": "^0.12.0"
   }

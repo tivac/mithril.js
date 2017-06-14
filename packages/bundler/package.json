@@ -1,0 +1,11 @@
+{
+  "name": "mithril-bundler",
+  "version": "1.0.0",
+  "description": "Simplistic CommonJS module bundler",
+  "main": "bundle.js",
+  "devDependencies": {
+    "ospec": "^1.2.3"
+  },
+  "license": "MIT",
+  "private": true
+}

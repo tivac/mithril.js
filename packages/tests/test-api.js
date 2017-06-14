@@ -1,8 +1,8 @@
 "use strict"
 
-var o = require("../ospec/ospec")
-var browserMock = require("../test-utils/browserMock")
-var components = require("../test-utils/components")
+var o = require("../packages/ospec/ospec")
+var browserMock = require("../packages/test-utils/browserMock")
+var components = require("../packages/test-utils/components")
 
 o.spec("api", function() {
 	var m

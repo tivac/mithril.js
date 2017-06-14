@@ -1,0 +1,11 @@
+{
+  "name": "mithril-test-utils",
+  "version": "1.0.0",
+  "description": "Utilities for testing Mithril",
+  "main": "browserMock.js",
+  "devDependencies": {
+    "ospec": "^1.2.3"
+  },
+  "license": "MIT",
+  "private": true
+}

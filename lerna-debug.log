@@ -1,0 +1,168 @@
+0 silly input [ 'bootstrap' ]
+1 silly flags { _: [ 'bootstrap' ], sort: true, concurrency: 4 }
+2 verbose rootPath C:\Users\Patrick\Documents\Code\mithril.js
+3 info version 2.0.0-rc.5
+4 silly existsSync C:\Users\Patrick\Documents\Code\mithril.js\VERSION
+5 silly initialize attempt
+6 silly initialize success
+7 silly execute attempt
+8 info Bootstrapping 5 packages
+9 info lifecycle preinstall
+10 silly runScript preinstall ospec
+11 silly ospec
+12 silly runScript preinstall mithril-stream
+13 silly mithril-stream
+14 silly runScript preinstall mithril-tests
+15 silly mithril-tests
+16 silly runScript preinstall mithril-querystring
+17 silly mithril-querystring
+18 silly runScript preinstall mithril-test-utils
+19 silly mithril-test-utils
+20 silly hasMatchingDependency mithril-querystring ospec
+21 silly hasMatchingDependency mithril-test-utils ospec
+22 silly hasDependencyInstalled mithril-querystring mithril-test-utils
+23 silly dependencyIsSatisfied [ 'mithril-test-utils',
+23 silly dependencyIsSatisfied   '^1.1.2',
+23 silly dependencyIsSatisfied   'C:\\Users\\Patrick\\Documents\\Code\\mithril.js\\packages\\querystring\\node_modules' ]
+24 verbose dependencyIsSatisfied mithril-test-utils false
+25 silly hasDependencyInstalled mithril-tests mithril-test-utils
+26 silly dependencyIsSatisfied [ 'mithril-test-utils',
+26 silly dependencyIsSatisfied   '^0.0.0',
+26 silly dependencyIsSatisfied   'C:\\Users\\Patrick\\Documents\\Code\\mithril.js\\packages\\tests\\node_modules' ]
+27 verbose dependencyIsSatisfied mithril-test-utils false
+28 silly hasDependencyInstalled mithril-tests module
+29 silly dependencyIsSatisfied [ 'module',
+29 silly dependencyIsSatisfied   '^0.0.0',
+29 silly dependencyIsSatisfied   'C:\\Users\\Patrick\\Documents\\Code\\mithril.js\\packages\\tests\\node_modules' ]
+30 verbose dependencyIsSatisfied module false
+31 silly hasDependencyInstalled mithril-tests ospec
+32 silly dependencyIsSatisfied [ 'ospec',
+32 silly dependencyIsSatisfied   '^0.0.0',
+32 silly dependencyIsSatisfied   'C:\\Users\\Patrick\\Documents\\Code\\mithril.js\\packages\\tests\\node_modules' ]
+33 verbose dependencyIsSatisfied ospec false
+34 silly hasDependencyInstalled mithril-tests mithril
+35 silly dependencyIsSatisfied [ 'mithril',
+35 silly dependencyIsSatisfied   '^1.1.2',
+35 silly dependencyIsSatisfied   'C:\\Users\\Patrick\\Documents\\Code\\mithril.js\\packages\\tests\\node_modules' ]
+36 verbose dependencyIsSatisfied mithril false
+37 silly root dependencies []
+38 silly leaf dependencies {
+38 silly leaf dependencies   "mithril-querystring": [
+38 silly leaf dependencies     {
+38 silly leaf dependencies       "dependency": "mithril-test-utils@^1.1.2",
+38 silly leaf dependencies       "isSatisfied": false
+38 silly leaf dependencies     }
+38 silly leaf dependencies   ],
+38 silly leaf dependencies   "mithril-tests": [
+38 silly leaf dependencies     {
+38 silly leaf dependencies       "dependency": "mithril-test-utils@^0.0.0",
+38 silly leaf dependencies       "isSatisfied": false
+38 silly leaf dependencies     },
+38 silly leaf dependencies     {
+38 silly leaf dependencies       "dependency": "module@^0.0.0",
+38 silly leaf dependencies       "isSatisfied": false
+38 silly leaf dependencies     },
+38 silly leaf dependencies     {
+38 silly leaf dependencies       "dependency": "ospec@^0.0.0",
+38 silly leaf dependencies       "isSatisfied": false
+38 silly leaf dependencies     },
+38 silly leaf dependencies     {
+38 silly leaf dependencies       "dependency": "mithril@^1.1.2",
+38 silly leaf dependencies       "isSatisfied": false
+38 silly leaf dependencies     }
+38 silly leaf dependencies   ]
+38 silly leaf dependencies }
+39 info Installing external dependencies
+40 verbose actions 2 actions, concurrency 4
+41 silly installInDir querystring [ 'mithril-test-utils@^1.1.2' ]
+42 silly installInDir backup C:\Users\Patrick\Documents\Code\mithril.js\packages\querystring\package.json
+43 silly rename [ 'C:\\Users\\Patrick\\Documents\\Code\\mithril.js\\packages\\querystring\\package.json',
+43 silly rename   'C:\\Users\\Patrick\\Documents\\Code\\mithril.js\\packages\\querystring\\package.json.lerna_backup' ]
+44 silly installInDir tests [ 'mithril-test-utils@^0.0.0',
+44 silly installInDir   'module@^0.0.0',
+44 silly installInDir   'ospec@^0.0.0',
+44 silly installInDir   'mithril@^1.1.2' ]
+45 silly installInDir backup C:\Users\Patrick\Documents\Code\mithril.js\packages\tests\package.json
+46 silly rename [ 'C:\\Users\\Patrick\\Documents\\Code\\mithril.js\\packages\\tests\\package.json',
+46 silly rename   'C:\\Users\\Patrick\\Documents\\Code\\mithril.js\\packages\\tests\\package.json.lerna_backup' ]
+47 silly installInDir writing tempJson { dependencies:
+47 silly installInDir    { 'mithril-test-utils': '^0.0.0',
+47 silly installInDir      module: '^0.0.0',
+47 silly installInDir      ospec: '^0.0.0',
+47 silly installInDir      mithril: '^1.1.2' } }
+48 silly installInDir writing tempJson { dependencies: { 'mithril-test-utils': '^1.1.2' } }
+49 silly getExecOpts { cwd: 'C:\\Users\\Patrick\\Documents\\Code\\mithril.js\\packages\\querystring' }
+50 silly installInDir [ 'npm', [ 'install' ] ]
+51 silly getExecOpts { cwd: 'C:\\Users\\Patrick\\Documents\\Code\\mithril.js\\packages\\tests' }
+52 silly installInDir [ 'npm', [ 'install' ] ]
+53 silly installInDir cleanup C:\Users\Patrick\Documents\Code\mithril.js\packages\querystring\package.json
+54 silly renameSync [ 'C:\\Users\\Patrick\\Documents\\Code\\mithril.js\\packages\\querystring\\package.json.lerna_backup',
+54 silly renameSync   'C:\\Users\\Patrick\\Documents\\Code\\mithril.js\\packages\\querystring\\package.json' ]
+55 verbose installed leaf mithril-querystring
+56 error execute Error: Command failed: npm install
+56 error execute Unhandled rejection RangeError: Maximum call stack size exceeded
+56 error execute     at exports.create (C:\Users\Patrick\AppData\Roaming\npm\node_modules\npm\lib\install\node.js:31:40)
+56 error execute     at C:\Users\Patrick\AppData\Roaming\npm\node_modules\npm\lib\install\node.js:36:14
+56 error execute     at Array.forEach (native)
+56 error execute     at exports.create (C:\Users\Patrick\AppData\Roaming\npm\node_modules\npm\lib\install\node.js:33:25)
+56 error execute     at C:\Users\Patrick\AppData\Roaming\npm\node_modules\npm\lib\install\node.js:36:14
+56 error execute     at Array.forEach (native)
+56 error execute     at exports.create (C:\Users\Patrick\AppData\Roaming\npm\node_modules\npm\lib\install\node.js:33:25)
+56 error execute     at normalizeTree (C:\Users\Patrick\AppData\Roaming\npm\node_modules\npm\lib\install.js:377:5)
+56 error execute     at Array.forEach (native)
+56 error execute     at normalizeTree (C:\Users\Patrick\AppData\Roaming\npm\node_modules\npm\lib\install.js:379:19)
+56 error execute     at Array.forEach (native)
+56 error execute     at normalizeTree (C:\Users\Patrick\AppData\Roaming\npm\node_modules\npm\lib\install.js:379:19)
+56 error execute     at Array.forEach (native)
+56 error execute     at normalizeTree (C:\Users\Patrick\AppData\Roaming\npm\node_modules\npm\lib\install.js:379:19)
+56 error execute     at Array.forEach (native)
+56 error execute     at normalizeTree (C:\Users\Patrick\AppData\Roaming\npm\node_modules\npm\lib\install.js:379:19)
+56 error execute npm ERR! cb() never called!
+56 error execute
+56 error execute npm ERR! This is an error with npm itself. Please report this error at:
+56 error execute npm ERR!     <https://github.com/npm/npm/issues>
+56 error execute
+56 error execute npm ERR! A complete log of this run can be found in:
+56 error execute npm ERR!     C:\Users\Patrick\AppData\Roaming\npm-cache\_logs\2017-06-14T05_45_42_920Z-debug.log
+56 error execute
+56 error execute     at Promise.all.then.arr (C:\Users\Patrick\AppData\Roaming\npm\node_modules\lerna\node_modules\execa\index.js:210:11)
+56 error execute     at <anonymous>
+56 error execute     at process._tickCallback (internal/process/next_tick.js:169:7)
+56 error execute  callback with error
+56 error execute  { Error: Command failed: npm install
+56 error execute Unhandled rejection RangeError: Maximum call stack size exceeded
+56 error execute     at exports.create (C:\Users\Patrick\AppData\Roaming\npm\node_modules\npm\lib\install\node.js:31:40)
+56 error execute     at C:\Users\Patrick\AppData\Roaming\npm\node_modules\npm\lib\install\node.js:36:14
+56 error execute     at Array.forEach (native)
+56 error execute     at exports.create (C:\Users\Patrick\AppData\Roaming\npm\node_modules\npm\lib\install\node.js:33:25)
+56 error execute     at C:\Users\Patrick\AppData\Roaming\npm\node_modules\npm\lib\install\node.js:36:14
+56 error execute     at Array.forEach (native)
+56 error execute     at exports.create (C:\Users\Patrick\AppData\Roaming\npm\node_modules\npm\lib\install\node.js:33:25)
+56 error execute     at normalizeTree (C:\Users\Patrick\AppData\Roaming\npm\node_modules\npm\lib\install.js:377:5)
+56 error execute     at Array.forEach (native)
+56 error execute     at normalizeTree (C:\Users\Patrick\AppData\Roaming\npm\node_modules\npm\lib\install.js:379:19)
+56 error execute     at Array.forEach (native)
+56 error execute     at normalizeTree (C:\Users\Patrick\AppData\Roaming\npm\node_modules\npm\lib\install.js:379:19)
+56 error execute     at Array.forEach (native)
+56 error execute     at normalizeTree (C:\Users\Patrick\AppData\Roaming\npm\node_modules\npm\lib\install.js:379:19)
+56 error execute     at Array.forEach (native)
+56 error execute     at normalizeTree (C:\Users\Patrick\AppData\Roaming\npm\node_modules\npm\lib\install.js:379:19)
+56 error execute npm ERR! cb() never called!
+56 error execute
+56 error execute npm ERR! This is an error with npm itself. Please report this error at:
+56 error execute npm ERR!     <https://github.com/npm/npm/issues>
+56 error execute
+56 error execute npm ERR! A complete log of this run can be found in:
+56 error execute npm ERR!     C:\Users\Patrick\AppData\Roaming\npm-cache\_logs\2017-06-14T05_45_42_920Z-debug.log
+56 error execute
+56 error execute     at Promise.all.then.arr (C:\Users\Patrick\AppData\Roaming\npm\node_modules\lerna\node_modules\execa\index.js:210:11)
+56 error execute     at <anonymous>
+56 error execute     at process._tickCallback (internal/process/next_tick.js:169:7)
+56 error execute   code: 1,
+56 error execute   killed: false,
+56 error execute   stdout: '',
+56 error execute   stderr: 'Unhandled rejection RangeError: Maximum call stack size exceeded\n    at exports.create (C:\\Users\\Patrick\\AppData\\Roaming\\npm\\node_modules\\npm\\lib\\install\\node.js:31:40)\n    at C:\\Users\\Patrick\\AppData\\Roaming\\npm\\node_modules\\npm\\lib\\install\\node.js:36:14\n    at Array.forEach (native)\n    at exports.create (C:\\Users\\Patrick\\AppData\\Roaming\\npm\\node_modules\\npm\\lib\\install\\node.js:33:25)\n    at C:\\Users\\Patrick\\AppData\\Roaming\\npm\\node_modules\\npm\\lib\\install\\node.js:36:14\n    at Array.forEach (native)\n    at exports.create (C:\\Users\\Patrick\\AppData\\Roaming\\npm\\node_modules\\npm\\lib\\install\\node.js:33:25)\n    at normalizeTree (C:\\Users\\Patrick\\AppData\\Roaming\\npm\\node_modules\\npm\\lib\\install.js:377:5)\n    at Array.forEach (native)\n    at normalizeTree (C:\\Users\\Patrick\\AppData\\Roaming\\npm\\node_modules\\npm\\lib\\install.js:379:19)\n    at Array.forEach (native)\n    at normalizeTree (C:\\Users\\Patrick\\AppData\\Roaming\\npm\\node_modules\\npm\\lib\\install.js:379:19)\n    at Array.forEach (native)\n    at normalizeTree (C:\\Users\\Patrick\\AppData\\Roaming\\npm\\node_modules\\npm\\lib\\install.js:379:19)\n    at Array.forEach (native)\n    at normalizeTree (C:\\Users\\Patrick\\AppData\\Roaming\\npm\\node_modules\\npm\\lib\\install.js:379:19)\nnpm ERR! cb() never called!\n\nnpm ERR! This is an error with npm itself. Please report this error at:\nnpm ERR!     <https://github.com/npm/npm/issues>\n\nnpm ERR! A complete log of this run can be found in:\nnpm ERR!     C:\\Users\\Patrick\\AppData\\Roaming\\npm-cache\\_logs\\2017-06-14T05_45_42_920Z-debug.log\n',
+56 error execute   failed: true,
+56 error execute   signal: null,
+56 error execute   cmd: 'npm install',
+56 error execute   timedOut: false }

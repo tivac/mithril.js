@@ -1,0 +1,12 @@
+{
+  "name": "mithril-querystring",
+  "version": "1.1.2",
+  "main": "build.js",
+  "devDependencies": {
+    "ospec": "^1.2.3",
+    "mithril-test-utils": "^1.1.2"
+  },
+  "license": "MIT",
+  "repository": "MithrilJS/mithril.js",
+  "author": "Leo Horie <lhorie@hotmail.com>"
+}

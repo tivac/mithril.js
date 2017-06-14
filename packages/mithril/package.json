@@ -1,0 +1,15 @@
+{
+  "name": "mithril",
+  "version": "1.1.1",
+  "description": "A framework for building brilliant applications",
+  "author": "Leo Horie",
+  "license": "MIT",
+  "main": "mithril.js",
+  "repository": "MithrilJS/mithril.js",
+  "devDependencies": {
+    "eslint": "^3.19.0"
+  },
+  "dependencies": {
+    "mithril-querystring": "^1.0.0"
+  }
+}

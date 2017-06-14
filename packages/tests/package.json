@@ -1,0 +1,14 @@
+{
+  "name": "mithril-tests",
+  "version": "1.0.0",
+  "description": "Mithril API tests",
+  "main": "test-api.js",
+  "license": "MIT",
+  "private": true,
+  "devDependencies":{
+    "mithril-test-utils": "^0.0.0",
+    "module": "^0.0.0",
+    "ospec": "^0.0.0",
+    "mithril": "^1.1.2"
+  }
+}

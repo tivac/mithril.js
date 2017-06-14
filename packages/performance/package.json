@@ -1,0 +1,12 @@
+{
+  "name": "mithril-performance",
+  "version": "1.0.0",
+  "description": "",
+  "main": "test-perf.js",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "benchmark": "^2.1.4",
+    "lodash": "^4.17.4"
+  }
+}
