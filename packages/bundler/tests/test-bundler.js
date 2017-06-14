@@ -1,11 +1,11 @@
 "use strict"
 
-var o = require("../../ospec/ospec")
+var o = require("ospec")
 var bundle = require("../bundle")
 
 var fs = require("fs")
 
-var ns = "bundler/tests/"
+var ns = "packages/bundler/tests/"
 function read(filepath) {
 	try {return fs.readFileSync(ns + filepath, "utf8")} catch (e) {/* ignore */}
 }
@@ -34,7 +34,7 @@ o.spec("bundler", function() {
 		write("a.js", 'var b = require("./b");')
 		write("b.js", "module.exports = 1;")
 		bundle(ns + "a.js", ns + "out.js")
-		
+
 		o(read("out.js")).equals(";(function() {\nvar b = 1;\n}());")
 
 		remove("a.js")
@@ -45,7 +45,7 @@ o.spec("bundler", function() {
 		write("a.js", 'let b = require("./b")')
 		write("b.js", "module.exports = 1")
 		bundle(ns + "a.js", ns + "out.js")
-		
+
 		o(read("out.js")).equals(";(function() {\nlet b = 1\n}());")
 
 		remove("a.js")
@@ -56,7 +56,7 @@ o.spec("bundler", function() {
 		write("a.js", 'const b = require("./b")')
 		write("b.js", "module.exports = 1")
 		bundle(ns + "a.js", ns + "out.js")
-		
+
 		o(read("out.js")).equals(";(function() {\nconst b = 1\n}());")
 
 		remove("a.js")
@@ -89,7 +89,7 @@ o.spec("bundler", function() {
 		write("a.js", '"use strict"\nvar b = require("./b")')
 		write("b.js", '"use strict"\nmodule.exports = 1')
 		bundle(ns + "a.js", ns + "out.js")
-		
+
 		o(read("out.js")).equals(';(function() {\n"use strict"\nvar b = 1\n}());')
 
 		remove("a.js")
@@ -113,7 +113,7 @@ o.spec("bundler", function() {
 		bundle(ns + "a.js", ns + "out.js")
 
 		o(read("out.js")).equals(';(function() {\n"use strict"\nvar b = 1\n}());')
-	
+
 		remove("a.js")
 		remove("b.js")
 		remove("out.js")

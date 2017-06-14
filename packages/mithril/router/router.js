@@ -1,7 +1,7 @@
 "use strict"
 
-var buildQueryString = require("../querystring/build")
-var parseQueryString = require("../querystring/parse")
+var buildQueryString = require("mithril-querystring/build")
+var parseQueryString = require("mithril-querystring/parse")
 
 module.exports = function($window) {
 	var supportsPushState = typeof $window.history.pushState === "function"

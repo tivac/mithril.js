@@ -1,7 +1,7 @@
 "use strict"
 
-var o = require("../../ospec/ospec")
-var pushStateMock = require("../../test-utils/pushStateMock")
+var o = require("ospec")
+var pushStateMock = require("test-utils/pushStateMock")
 var Router = require("../../router/router")
 
 o.spec("Router.getPath", function() {

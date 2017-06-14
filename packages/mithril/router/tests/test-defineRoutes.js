@@ -1,8 +1,8 @@
 "use strict"
 
-var o = require("../../ospec/ospec")
-var callAsync = require("../../test-utils/callAsync")
-var pushStateMock = require("../../test-utils/pushStateMock")
+var o = require("ospec")
+var callAsync = require("test-utils/callAsync")
+var pushStateMock = require("test-utils/pushStateMock")
 var Router = require("../../router/router")
 
 o.spec("Router.defineRoutes", function() {

@@ -1,7 +1,7 @@
 "use strict"
 
-var o = require("../../ospec/ospec")
-var components = require("../../test-utils/components")
+var o = require("ospec")
+var components = require("../components")
 
 o.spec("test-utils/components", function() {
 	var test = o.spy(function(component) {

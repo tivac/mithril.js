@@ -1,7 +1,7 @@
 "use strict"
 
-var o = require("../../ospec/ospec")
-var domMock = require("../../test-utils/domMock")
+var o = require("ospec")
+var domMock = require("test-utils/domMock")
 var apiRedraw = require("../../api/redraw")
 
 o.spec("redrawService", function() {
@@ -23,7 +23,7 @@ o.spec("redrawService", function() {
 		redrawService.subscribe(root, spy)
 
 		o(spy.callCount).equals(0)
-		
+
 		redrawService.redraw()
 
 		o(spy.callCount).equals(1)
@@ -35,7 +35,7 @@ o.spec("redrawService", function() {
 		o(spy.callCount).equals(1)
 		setTimeout(function() {
 			o(spy.callCount).equals(2)
-			
+
 			done()
 		}, 20)
 	})
@@ -68,7 +68,7 @@ o.spec("redrawService", function() {
 			o(spy1.callCount).equals(2)
 			o(spy2.callCount).equals(2)
 			o(spy3.callCount).equals(2)
-			
+
 			done()
 		}, 20)
 	})

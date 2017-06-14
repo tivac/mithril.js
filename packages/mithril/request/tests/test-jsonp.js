@@ -1,10 +1,10 @@
 "use strict"
 
-var o = require("../../ospec/ospec")
-var xhrMock = require("../../test-utils/xhrMock")
+var o = require("ospec")
+var xhrMock = require("test-utils/xhrMock")
+var parseQueryString = require("mithril-querystring/parse")
 var Request = require("../../request/request")
 var Promise = require("../../promise/promise")
-var parseQueryString = require("../../querystring/parse")
 
 o.spec("jsonp", function() {
 	var mock, jsonp, complete

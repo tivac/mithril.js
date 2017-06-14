@@ -1,8 +1,8 @@
 "use strict"
 
-var o = require("../../ospec/ospec")
-var components = require("../../test-utils/components")
-var domMock = require("../../test-utils/domMock")
+var o = require("ospec")
+var components = require("test-utils/components")
+var domMock = require("test-utils/domMock")
 
 var m = require("../../render/hyperscript")
 var coreRenderer = require("../../render/render")

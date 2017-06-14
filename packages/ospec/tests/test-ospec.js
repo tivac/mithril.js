@@ -1,6 +1,6 @@
 "use strict"
 
-var callAsync = require("../../test-utils/callAsync")
+var callAsync = require("test-utils/callAsync")
 var o = require("../ospec")
 
 new function(o) {

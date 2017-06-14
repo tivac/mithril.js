@@ -1,9 +1,9 @@
 "use strict"
 
-var o = require("../../ospec/ospec")
-var callAsync = require("../../test-utils/callAsync")
-var components = require("../../test-utils/components")
-var domMock = require("../../test-utils/domMock")
+var o = require("ospec")
+var callAsync = require("test-utils/callAsync")
+var components = require("test-utils/components")
+var domMock = require("test-utils/domMock")
 var vdom = require("../../render/render")
 var Promise = require("../../promise/promise")
 

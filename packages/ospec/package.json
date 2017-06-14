@@ -9,5 +9,8 @@
   "bin": {
     "ospec": "./bin/ospec"
   },
-  "repository": "MithrilJS/mithril.js"
+  "repository": "MithrilJS/mithril.js",
+  "devDependencies": {
+    "test-utils": "^1.0.0"
+  }
 }

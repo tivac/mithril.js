@@ -1,8 +1,8 @@
 /* eslint-disable no-script-url */
 "use strict"
 
-var o = require("../../ospec/ospec")
-var domMock = require("../../test-utils/domMock")
+var o = require("ospec")
+var domMock = require("test-utils/domMock")
 var vdom = require("../../render/render")
 
 o.spec("createElement", function() {

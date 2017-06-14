@@ -7,7 +7,8 @@
   "main": "mithril.js",
   "repository": "MithrilJS/mithril.js",
   "devDependencies": {
-    "eslint": "^3.19.0"
+    "ospec": "^1.2.3",
+    "test-utils": "^1.0.0"
   },
   "dependencies": {
     "mithril-querystring": "^1.0.0"

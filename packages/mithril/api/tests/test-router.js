@@ -1,11 +1,11 @@
 "use strict"
 
-var o = require("../../ospec/ospec")
-var callAsync = require("../../test-utils/callAsync")
-var browserMock = require("../../test-utils/browserMock")
+var o = require("ospec")
+var callAsync = require("test-utils/callAsync")
+var browserMock = require("test-utils/browserMock")
 
 var m = require("../../render/hyperscript")
-var callAsync = require("../../test-utils/callAsync")
+var callAsync = require("test-utils/callAsync")
 var apiRedraw = require("../../api/redraw")
 var apiRouter = require("../../api/router")
 var Promise = require("../../promise/promise")

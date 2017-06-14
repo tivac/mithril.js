@@ -1,6 +1,6 @@
 "use strict"
 
-var buildQueryString = require("../querystring/build")
+var buildQueryString = require("mithril-querystring/build")
 
 var FILE_PROTOCOL_REGEX = new RegExp("^file://", "i")
 

@@ -1,8 +1,8 @@
 "use strict"
 
-var o = require("../../ospec/ospec")
-var xhrMock = require("../../test-utils/xhrMock")
-var parseQueryString = require("../../querystring/parse")
+var o = require("ospec")
+var xhrMock = require("../xhrMock")
+var parseQueryString = require("mithril-querystring/parse")
 
 o.spec("xhrMock", function() {
 	var $window

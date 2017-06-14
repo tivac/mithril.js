@@ -16,7 +16,7 @@
     "lint": "eslint . || true",
     "lint:fix": "eslint . --fix",
     "perf": "node performance/test-perf.js",
-    "test": "node ospec/bin/ospec",
+    "test": "node packages/ospec/bin/ospec",
     "posttest": "npm run lint",
     "cover": "istanbul cover --print both ospec/bin/ospec",
     "release": "npm version -m 'v%s'",
@@ -25,10 +25,10 @@
     "postversion": "git push --follow-tags"
   },
   "devDependencies": {
-    "eslint": "^3.19.0",
-    "lerna": "^2.0.0-rc.5",
-    "marked": "^0.3.6",
     "@alrra/travis-scripts": "^3.0.1",
-    "gh-pages": "^0.12.0"
+    "eslint": "^3.19.0",
+    "gh-pages": "^0.12.0",
+    "lerna": "^2.0.0-rc.5",
+    "marked": "^0.3.6"
   }
 }

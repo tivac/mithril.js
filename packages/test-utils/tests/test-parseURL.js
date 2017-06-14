@@ -1,7 +1,7 @@
 "use strict"
 
-var o = require("../../ospec/ospec")
-var parseURL = require("../../test-utils/parseURL")
+var o = require("ospec")
+var parseURL = require("../parseURL")
 
 o.spec("parseURL", function() {
 	var root = {protocol: "http:", hostname: "localhost", port: "", pathname: "/"}

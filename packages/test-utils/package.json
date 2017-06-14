@@ -1,11 +1,12 @@
 {
-  "name": "mithril-test-utils",
+  "name": "test-utils",
   "version": "1.0.0",
   "description": "Utilities for testing Mithril",
   "main": "browserMock.js",
   "devDependencies": {
     "ospec": "^1.2.3",
-    "module": "^1.0.0"
+    "module": "^1.0.0",
+    "mithril-querystring": "^1.0.0"
   },
   "license": "MIT",
   "private": true
