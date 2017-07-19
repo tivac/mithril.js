@@ -1,4 +1,3 @@
-"use strict"
 /** @constructor */
 var PromisePolyfill = function(executor) {
 	if (!(this instanceof PromisePolyfill)) throw new Error("Promise must be called with `new`")
@@ -95,12 +94,14 @@ PromisePolyfill.race = function(list) {
 	})
 }
 
-if (typeof window !== "undefined") {
-	if (typeof window.Promise === "undefined") window.Promise = PromisePolyfill
-	module.exports = window.Promise
-} else if (typeof global !== "undefined") {
-	if (typeof global.Promise === "undefined") global.Promise = PromisePolyfill
-	module.exports = global.Promise
-} else {
-	module.exports = PromisePolyfill
+export default function() {
+	if (typeof window !== "undefined") {
+		if (typeof window.Promise === "undefined") window.Promise = PromisePolyfill
+		return window.Promise
+	} else if (typeof global !== "undefined") {
+		if (typeof global.Promise === "undefined") global.Promise = PromisePolyfill
+		return global.Promise
+	} else {
+		return PromisePolyfill
+	}
 }

@@ -22,13 +22,16 @@
     "release": "npm version -m 'v%s'",
     "preversion": "npm run test",
     "version": "npm run build && git add mithril.js mithril.min.js",
-    "postversion": "git push --follow-tags"
+    "postversion": "git push --follow-tags",
+    "start": "rollup --config --watch"
   },
   "devDependencies": {
     "benchmark": "^2.1.4",
     "eslint": "^3.19.0",
     "istanbul": "^0.4.5",
-    "marked": "^0.3.6"
+    "marked": "^0.3.6",
+    "rollup": "^0.45.2",
+    "rollup-watch": "^4.3.1"
   },
   "bin": {
     "ospec": "./ospec/bin/ospec",

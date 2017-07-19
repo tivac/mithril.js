@@ -1,6 +1,4 @@
-"use strict"
-
-var Vnode = require("../render/vnode")
+import Vnode from "./vnode.js"
 
 var selectorParser = /(?:(^|#|\.)([^#\.\[\]]+))|(\[(.+?)(?:\s*=\s*("|'|)((?:\\["'\]]|.)*?)\5)?\])/g
 var selectorCache = {}
@@ -97,4 +95,4 @@ function hyperscript(selector) {
 	}
 }
 
-module.exports = hyperscript
+export default hyperscript;

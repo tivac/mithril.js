@@ -1,10 +1,12 @@
 "use strict"
 
-var Vnode = require("../render/vnode")
-var Promise = require("../promise/promise")
-var coreRouter = require("../router/router")
+import Vnode from "../render/vnode.js"
+import promisePolyfill from "../promise/promise.js"
+import coreRouter from "../router/router.js"
 
-module.exports = function($window, redrawService) {
+var Promise = promisePolyfill();
+
+export default function($window, redrawService) {
 	var routeService = coreRouter($window)
 
 	var identity = function(v) {return v}

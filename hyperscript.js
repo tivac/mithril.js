@@ -1,8 +1,8 @@
-"use strict"
+import hyperscript from "./render/hyperscript.js"
+import fragment from "./render/fragment.js"
+import trust from "./render/trust.js"
 
-var hyperscript = require("./render/hyperscript")
+hyperscript.fragment = fragment
+hyperscript.trust = trust
 
-hyperscript.trust = require("./render/trust")
-hyperscript.fragment = require("./render/fragment")
-
-module.exports = hyperscript
+export default hyperscript

@@ -1,9 +1,9 @@
 "use strict"
 
-var buildQueryString = require("../querystring/build")
-var parseQueryString = require("../querystring/parse")
+import buildQueryString from "../querystring/build.js"
+import parseQueryString from "../querystring/parse.js"
 
-module.exports = function($window) {
+export default function($window) {
 	var supportsPushState = typeof $window.history.pushState === "function"
 	var callAsync = typeof setImmediate === "function" ? setImmediate : setTimeout
 

@@ -1,6 +1,4 @@
-"use strict"
-
-var coreRenderer = require("../render/render")
+import coreRenderer from "../render/render.js"
 
 function throttle(callback) {
 	//60fps translates to 16.6ms, round it down since setTimeout requires int
@@ -19,8 +17,7 @@ function throttle(callback) {
 	}
 }
 
-
-module.exports = function($window, throttleMock) {
+export default function($window, throttleMock) {
 	var renderService = coreRenderer($window)
 	renderService.setEventCallback(function(e) {
 		if (e.redraw === false) e.redraw = undefined
