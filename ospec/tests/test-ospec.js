@@ -4,7 +4,7 @@ var callAsync = require("../../test-utils/callAsync")
 var o = require("../ospec")
 
 new function(o) {
-	o = o.new()
+	o = o.new("o.only tests")
 
 	o.spec("ospec", function() {
 		o("skipped", function() {

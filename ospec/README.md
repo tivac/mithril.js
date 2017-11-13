@@ -164,7 +164,7 @@ o("promise test", async function() {
 })
 ```
 
-By default, asynchronous tests time out after 20ms. This can be changed on a per-test basis using the `timeout` argument:
+By default, asynchronous tests time out after 20ms. This can be changed on a per-test basis using the `timeout` argument or the `o.timeout` function:
 
 ```javascript
 o("setTimeout calls callback", function(done, timeout) {
@@ -172,24 +172,15 @@ o("setTimeout calls callback", function(done, timeout) {
 
 	setTimeout(done, 30)
 })
-```
 
-Note that the `timeout` function call must be the first statement in its test.	This currently does not work for promise tests. You can combine both methods to do this:
+o("setTimeout calls callback", function(done) {
+	o.timeout(50) //wait 50ms before bailing out of the test
 
-```javascript
-o("promise test", function(done, timeout) {
-	timeout(1000)
-	someOtherAsyncFunctionThatTakes900ms().then(done)
+	setTimeout(done, 30)
 })
 ```
 
-```javascript
-o("promise test", async function(done, timeout) {
-	timeout(1000)
-	await someOtherAsyncFunctionThatTakes900ms()
-	done()
-})
-```
+Note that the **timeout must be adjusted as the first statement in its test**.
 
 Asynchronous tests generate an assertion that succeeds upon calling `done` or fails on timeout with the error message `async test timed out`.
 
@@ -423,6 +414,12 @@ Declares that only a single test should be run, instead of all of them
 
 ---
 
+### void o.timeout(Number delay)
+
+Adjust the timeout for the current test, will be a no-op unless called during an actual test
+
+---
+
 ### Function o.spy([Function fn])
 
 Returns a function that records the number of times it gets called, and its arguments
@@ -437,18 +434,18 @@ The arguments that were passed to the function in the last time it was called
 
 ---
 
-### void o.run()
+### void o.run([Function fn])
 
-Runs the test suite
+Runs the test suite. Accepts an optional completion callback that will be executed once done with a summary of the tests.
 
 ---
 
-### Function o.new()
+### Function o.new([String name])
 
 Returns a new instance of ospec. Useful if you want to run more than one test suite concurrently
 
 ```javascript
-var $o = o.new()
+var $o = o.new("Secondary ospec")
 $o("a test", function() {
 	$o(1).equals(1)
 })

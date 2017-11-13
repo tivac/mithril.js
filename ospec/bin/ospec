@@ -5,6 +5,9 @@ var fs = require("fs")
 var path = require("path")
 
 var o = require("../ospec")
+var highlight = require("../highlight")
+
+var hasProcess = typeof process === "object"
 
 function traverseDirectory(pathname, callback) {
 	pathname = pathname.replace(/\\/g, "/")
@@ -38,7 +41,21 @@ traverseDirectory(".", function(pathname) {
 		require(path.normalize(process.cwd()) + "/" + pathname) // eslint-disable-line global-require
 	}
 })
-.then(o.run)
+.then(function() {
+	o.run(function(out) {
+		out.failed.forEach(function(r) {
+			console.error(r.test.context + ":\n" + highlight(r.test.message) + (r.stackTrace ? "\n\n" + r.stackTrace + "\n\n" : ""), hasProcess ? "" : "color:red", hasProcess ? "" : "color:black")
+		})
+
+		console.log(
+			(out.name ? out.name + ": " : "") +
+			out.results.length + " assertions completed in " + out.duration + "ms, " +
+			"of which " + out.failed.length + " failed"
+		)
+		
+		if (!out.result) process.exitCode = 1
+	})
+})
 .catch(function(e) {
 	console.log(e.stack)
 })

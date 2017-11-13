@@ -1,6 +1,8 @@
 /* eslint-disable global-require, no-bitwise, no-process-exit */
 "use strict"
 
+var highlight = require("./highlight")
+
 module.exports = new function init(name) {
 	var spec = {}, subjects = [], results, only = null, ctx = spec, start, stack = 0, nextTickish, hasProcess = typeof process === "object", hasOwn = ({}).hasOwnProperty
 
@@ -52,10 +54,25 @@ module.exports = new function init(name) {
 	o.cleanStackTrace = function(stack) {
 		return stack.match(/^(?:(?!Error|[\/\\]ospec[\/\\]ospec\.js).)*$/gm).pop()
 	}
-	o.run = function() {
+	o.timeout = function(delay) {}
+	o.run = function(complete) {
 		results = []
 		start = new Date
-		test(spec, [], [], report)
+		test(spec, [], [], function() {
+			var out = report()
+
+			if(typeof complete === "function") return complete(out)
+
+			out.failed.forEach(function(r) {
+				console.error(r.test.context + ":\n" + highlight(r.test.message) + (r.stackTrace ? "\n\n" + r.stackTrace + "\n\n" : ""), hasProcess ? "" : "color:red", hasProcess ? "" : "color:black")
+			})
+
+			console.log(
+				(out.name ? out.name + ": " : "") +
+				out.results.length + " assertions completed in " + out.duration + "ms, " +
+				"of which " + out.failed.length + " failed"
+			)
+		})
 
 		function test(spec, pre, post, finalize) {
 			pre = [].concat(pre, spec["__beforeEach"] || [])
@@ -90,6 +107,8 @@ module.exports = new function init(name) {
 				var timeout = 0, delay = 200, s = new Date
 				var isDone = false
 
+				o.timeout = function(t) {delay = t};
+
 				function done(err) {
 					if (err) {
 						if (err.message) record(err.message, err)
@@ -120,7 +139,7 @@ module.exports = new function init(name) {
 					var arg = (body.match(/\(([\w$]+)/) || body.match(/([\w$]+)\s*=>/) || []).pop()
 					if (body.indexOf(arg) === body.lastIndexOf(arg)) throw new Error("`" + arg + "()` should be called at least once")
 					try {
-						fn(done, function(t) {delay = t})
+						fn(done, o.timeout)
 					}
 					catch (e) {
 						done(e)
@@ -230,25 +249,20 @@ module.exports = new function init(name) {
 		else if (typeof value === "function") return value.name || "<anonymous function>"
 		try {return JSON.stringify(value)} catch (e) {return String(value)}
 	}
-	function highlight(message) {
-		return hasProcess ? "\x1b[31m" + message + "\x1b[0m" : "%c" + message + "%c "
-	}
 
 	function report() {
-		var status = 0
+		var out = {name:name,result:true,results:results,duration:Math.round(new Date - start),failed:[],passed:[]}
 		for (var i = 0, r; r = results[i]; i++) {
 			if (!r.pass) {
 				var stackTrace = o.cleanStackTrace(r.error)
-				console.error(r.context + ":\n" + highlight(r.message) + (stackTrace ? "\n\n" + stackTrace + "\n\n" : ""), hasProcess ? "" : "color:red", hasProcess ? "" : "color:black")
-				status = 1
+				out.failed.push({test:r,stack:stackTrace})
+				out.result = false
+			} else {
+				out.passed.push(r)
 			}
 		}
-		console.log(
-			(name ? name + ": " : "") +
-			results.length + " assertions completed in " + Math.round(new Date - start) + "ms, " +
-			"of which " + results.filter(function(result){return result.error}).length + " failed"
-		)
-		if (hasProcess && status === 1) process.exit(1)
+
+		return out
 	}
 
 	if(hasProcess) {
