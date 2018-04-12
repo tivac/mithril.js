@@ -1599,11 +1599,11 @@
 
 	var route = router(window, redrawService)
 
-	var withAttr = function(attrName, callback, context) {
+	function withAttr(attrName, callback, context) {
 		return function(e) {
 			callback.call(context || this, attrName in e.currentTarget ? e.currentTarget[attrName] : e.currentTarget.getAttribute(attrName));
 		}
-	};
+	}
 
 	requestService.setCompletionCallback(redrawService.redraw);
 
