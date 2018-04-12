@@ -1,3 +1,3 @@
-"use strict"
+import render from "./render/render.js"
 
-module.exports = require("./render/render")(window)
+export default render(window)

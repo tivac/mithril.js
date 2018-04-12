@@ -1231,7 +1231,7 @@
 		default: parseQueryString
 	});
 
-	var render$1 = render(window);
+	var render$1 = render(window)
 
 	var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
