@@ -1,4 +1,7 @@
 module.exports = {
+	"parserOptions": {
+		"sourceType": "module"
+	},
     "env": {
         "browser": true,
         "commonjs": true,
@@ -205,7 +208,7 @@ module.exports = {
         "require-yield": "error",
         "semi": "off",
         "semi-spacing": "off",
-        "sort-imports": "error",
+        "sort-imports": "warn",
         "sort-vars": "off",
         "space-before-blocks": "off",
         "space-before-function-paren": "off",
