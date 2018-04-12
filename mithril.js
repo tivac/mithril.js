@@ -21,6 +21,10 @@
 
 	var vnode = Vnode;
 
+	var fragment = function(attrs, children) {
+		return vnode("[", attrs.key, attrs, vnode.normalizeChildren(children), undefined, undefined)
+	};
+
 	var selectorParser = /(?:(^|#|\.)([^#\.\[\]]+))|(\[(.+?)(?:\s*=\s*("|'|)((?:\\["'\]]|.)*?)\5)?\])/g;
 	var selectorCache = {};
 	var hasOwn = {}.hasOwnProperty;
@@ -140,14 +144,8 @@
 		return vnode("<", undefined, undefined, html, undefined, undefined)
 	};
 
-	var fragment = function(attrs, children) {
-		return vnode("[", attrs.key, attrs, vnode.normalizeChildren(children), undefined, undefined)
-	};
-
 	hyperscript_1.trust = trust;
 	hyperscript_1.fragment = fragment;
-
-	var hyperscript_1$1 = hyperscript_1;
 
 	/** @constructor */
 	var PromisePolyfill = function(executor) {
@@ -1634,21 +1632,21 @@
 
 	requestService.setCompletionCallback(redrawService.redraw);
 
-	hyperscript_1$1.version = "bleeding-edge";
+	hyperscript_1.version = "bleeding-edge";
 
-	hyperscript_1$1.PromisePolyfill = polyfill;
+	hyperscript_1.PromisePolyfill = polyfill;
 
-	hyperscript_1$1.buildQueryString = buildQueryString;
-	hyperscript_1$1.jsonp = requestService.jsonp;
-	hyperscript_1$1.mount = mount$1;
-	hyperscript_1$1.parseQueryString = parseQueryString;
-	hyperscript_1$1.redraw = redrawService.redraw;
-	hyperscript_1$1.render = render$1;
-	hyperscript_1$1.request = requestService.request;
-	hyperscript_1$1.route = route;
-	hyperscript_1$1.vnode = vnode;
-	hyperscript_1$1.withAttr = withAttr;
+	hyperscript_1.buildQueryString = buildQueryString;
+	hyperscript_1.jsonp = requestService.jsonp;
+	hyperscript_1.mount = mount$1;
+	hyperscript_1.parseQueryString = parseQueryString;
+	hyperscript_1.redraw = redrawService.redraw;
+	hyperscript_1.render = render$1;
+	hyperscript_1.request = requestService.request;
+	hyperscript_1.route = route;
+	hyperscript_1.vnode = vnode;
+	hyperscript_1.withAttr = withAttr;
 
-	return hyperscript_1$1;
+	return hyperscript_1;
 
 })));
