@@ -1152,8 +1152,7 @@
 		}
 	}
 
-
-	var redraw = function($window, throttleMock) {
+	function redraw($window, throttleMock) {
 		var renderService = render($window);
 		renderService.setEventCallback(function(e) {
 			if (e.redraw === false) e.redraw = undefined;
@@ -1181,7 +1180,7 @@
 		var redraw = (throttleMock || throttle)(sync);
 		redraw.sync = sync;
 		return {subscribe: subscribe, unsubscribe: unsubscribe, redraw: redraw, render: renderService.render}
-	};
+	}
 
 	var redrawService = redraw(window)
 
