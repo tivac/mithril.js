@@ -1,8 +1,6 @@
-import m from "./hyperscript.js"
-
 import PromisePolyfill from "./promise/polyfill.js"
-
 import buildQueryString from "./querystring/build.js"
+import m from "./hyperscript.js"
 import mount from "./mount.js"
 import parseQueryString from "./querystring/parse.js"
 import redrawService from "./redraw.js"
