@@ -1187,10 +1187,6 @@
 
 	var redrawService = redraw(window)
 
-	var redraw$1 = /*#__PURE__*/Object.freeze({
-		default: redrawService
-	});
-
 	var mount$1 = mount(redrawService)
 
 	function parseQueryString(string) {
@@ -1628,9 +1624,7 @@
 		return route
 	};
 
-	var redrawService$1 = ( redraw$1 && redrawService ) || redraw$1;
-
-	var route = router$1(window, redrawService$1);
+	var route = router$1(window, redrawService)
 
 	var withAttr = function(attrName, callback, context) {
 		return function(e) {

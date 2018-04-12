@@ -1,5 +1,4 @@
-"use strict"
+import redrawService from "./redraw.js"
+import router from "./api/router.js"
 
-var redrawService = require("./redraw")
-
-module.exports = require("./api/router")(window, redrawService)
+export default router(window, redrawService)
