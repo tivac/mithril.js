@@ -149,12 +149,6 @@
 
 	var hyperscript_1$1 = hyperscript_1;
 
-	var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-	function createCommonjsModule(fn, module) {
-		return module = { exports: {} }, fn(module, module.exports), module.exports;
-	}
-
 	/** @constructor */
 	var PromisePolyfill = function(executor) {
 		if (!(this instanceof PromisePolyfill)) throw new Error("Promise must be called with `new`")
@@ -267,30 +261,7 @@
 
 	var polyfill = PromisePolyfill;
 
-	var promise = createCommonjsModule(function (module) {
-
-
-
-	if (typeof window !== "undefined") {
-		if (typeof window.Promise === "undefined") {
-			window.Promise = polyfill;
-		} else if (!window.Promise.prototype.finally) {
-			window.Promise.prototype.finally = polyfill.prototype.finally;
-		}
-		module.exports = window.Promise;
-	} else if (typeof commonjsGlobal !== "undefined") {
-		if (typeof commonjsGlobal.Promise === "undefined") {
-			commonjsGlobal.Promise = polyfill;
-		} else if (!commonjsGlobal.Promise.prototype.finally) {
-			commonjsGlobal.Promise.prototype.finally = polyfill.prototype.finally;
-		}
-		module.exports = commonjsGlobal.Promise;
-	} else {
-		module.exports = polyfill;
-	}
-	});
-
-	var build = function(object) {
+	function buildQueryString(object) {
 		if (Object.prototype.toString.call(object) !== "[object Object]") return ""
 
 		var args = [];
@@ -313,189 +284,11 @@
 			}
 			else args.push(encodeURIComponent(key) + (value != null && value !== "" ? "=" + encodeURIComponent(value) : ""));
 		}
-	};
+	}
 
-	var FILE_PROTOCOL_REGEX = new RegExp("^file://", "i");
-
-	var request = function($window, Promise) {
-		var callbackCount = 0;
-
-		var oncompletion;
-		function setCompletionCallback(callback) {oncompletion = callback;}
-
-		function finalizer() {
-			var count = 0;
-			function complete() {if (--count === 0 && typeof oncompletion === "function") oncompletion();}
-
-			return function finalize(promise) {
-				var then = promise.then;
-				promise.then = function() {
-					count++;
-					var next = then.apply(promise, arguments);
-					next.then(complete, function(e) {
-						complete();
-						if (count === 0) throw e
-					});
-					return finalize(next)
-				};
-				return promise
-			}
-		}
-		function normalize(args, extra) {
-			if (typeof args === "string") {
-				var url = args;
-				args = extra || {};
-				if (args.url == null) args.url = url;
-			}
-			return args
-		}
-
-		function request(args, extra) {
-			var finalize = finalizer();
-			args = normalize(args, extra);
-
-			var promise = new Promise(function(resolve, reject) {
-				if (args.method == null) args.method = "GET";
-				args.method = args.method.toUpperCase();
-
-				var useBody = (args.method === "GET" || args.method === "TRACE") ? false : (typeof args.useBody === "boolean" ? args.useBody : true);
-
-				if (typeof args.serialize !== "function") args.serialize = typeof FormData !== "undefined" && args.data instanceof FormData ? function(value) {return value} : JSON.stringify;
-				if (typeof args.deserialize !== "function") args.deserialize = deserialize;
-				if (typeof args.extract !== "function") args.extract = extract;
-
-				args.url = interpolate(args.url, args.data);
-				if (useBody) args.data = args.serialize(args.data);
-				else args.url = assemble(args.url, args.data);
-
-				var xhr = new $window.XMLHttpRequest(),
-					aborted = false,
-					_abort = xhr.abort;
-
-
-				xhr.abort = function abort() {
-					aborted = true;
-					_abort.call(xhr);
-				};
-
-				xhr.open(args.method, args.url, typeof args.async === "boolean" ? args.async : true, typeof args.user === "string" ? args.user : undefined, typeof args.password === "string" ? args.password : undefined);
-
-				if (args.serialize === JSON.stringify && useBody && !(args.headers && args.headers.hasOwnProperty("Content-Type"))) {
-					xhr.setRequestHeader("Content-Type", "application/json; charset=utf-8");
-				}
-				if (args.deserialize === deserialize && !(args.headers && args.headers.hasOwnProperty("Accept"))) {
-					xhr.setRequestHeader("Accept", "application/json, text/*");
-				}
-				if (args.withCredentials) xhr.withCredentials = args.withCredentials;
-
-				if (args.timeout) xhr.timeout = args.timeout;
-
-				for (var key in args.headers) if ({}.hasOwnProperty.call(args.headers, key)) {
-					xhr.setRequestHeader(key, args.headers[key]);
-				}
-
-				if (typeof args.config === "function") xhr = args.config(xhr, args) || xhr;
-
-				xhr.onreadystatechange = function() {
-					// Don't throw errors on xhr.abort().
-					if(aborted) return
-
-					if (xhr.readyState === 4) {
-						try {
-							var response = (args.extract !== extract) ? args.extract(xhr, args) : args.deserialize(args.extract(xhr, args));
-							if (args.extract !== extract || (xhr.status >= 200 && xhr.status < 300) || xhr.status === 304 || FILE_PROTOCOL_REGEX.test(args.url)) {
-								resolve(cast(args.type, response));
-							}
-							else {
-								var error = new Error(xhr.responseText);
-								error.code = xhr.status;
-								error.response = response;
-								reject(error);
-							}
-						}
-						catch (e) {
-							reject(e);
-						}
-					}
-				};
-
-				if (useBody && (args.data != null)) xhr.send(args.data);
-				else xhr.send();
-			});
-			return args.background === true ? promise : finalize(promise)
-		}
-
-		function jsonp(args, extra) {
-			var finalize = finalizer();
-			args = normalize(args, extra);
-
-			var promise = new Promise(function(resolve, reject) {
-				var callbackName = args.callbackName || "_mithril_" + Math.round(Math.random() * 1e16) + "_" + callbackCount++;
-				var script = $window.document.createElement("script");
-				$window[callbackName] = function(data) {
-					script.parentNode.removeChild(script);
-					resolve(cast(args.type, data));
-					delete $window[callbackName];
-				};
-				script.onerror = function() {
-					script.parentNode.removeChild(script);
-					reject(new Error("JSONP request failed"));
-					delete $window[callbackName];
-				};
-				if (args.data == null) args.data = {};
-				args.url = interpolate(args.url, args.data);
-				args.data[args.callbackKey || "callback"] = callbackName;
-				script.src = assemble(args.url, args.data);
-				$window.document.documentElement.appendChild(script);
-			});
-			return args.background === true? promise : finalize(promise)
-		}
-
-		function interpolate(url, data) {
-			if (data == null) return url
-
-			var tokens = url.match(/:[^\/]+/gi) || [];
-			for (var i = 0; i < tokens.length; i++) {
-				var key = tokens[i].slice(1);
-				if (data[key] != null) {
-					url = url.replace(tokens[i], data[key]);
-				}
-			}
-			return url
-		}
-
-		function assemble(url, data) {
-			var querystring = build(data);
-			if (querystring !== "") {
-				var prefix = url.indexOf("?") < 0 ? "?" : "&";
-				url += prefix + querystring;
-			}
-			return url
-		}
-
-		function deserialize(data) {
-			try {return data !== "" ? JSON.parse(data) : null}
-			catch (e) {throw new Error(data)}
-		}
-
-		function extract(xhr) {return xhr.responseText}
-
-		function cast(type, data) {
-			if (typeof type === "function") {
-				if (Array.isArray(data)) {
-					for (var i = 0; i < data.length; i++) {
-						data[i] = new type(data[i]);
-					}
-				}
-				else return new type(data)
-			}
-			return data
-		}
-
-		return {request: request, jsonp: jsonp, setCompletionCallback: setCompletionCallback}
-	};
-
-	var request$1 = request(window, promise);
+	var build = /*#__PURE__*/Object.freeze({
+		default: buildQueryString
+	});
 
 	var render = function($window) {
 		var $doc = $window.document;
@@ -1396,7 +1189,7 @@
 
 	var mount$1 = mount(redraw$1);
 
-	var parse = function(string) {
+	function parseQueryString(string) {
 		if (string === "" || string == null) return {}
 		if (string.charAt(0) === "?") string = string.slice(1);
 
@@ -1428,7 +1221,225 @@
 			}
 		}
 		return data
+	}
+
+	var parse = /*#__PURE__*/Object.freeze({
+		default: parseQueryString
+	});
+
+	var render$1 = render(window);
+
+	var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+	function createCommonjsModule(fn, module) {
+		return module = { exports: {} }, fn(module, module.exports), module.exports;
+	}
+
+	var promise = createCommonjsModule(function (module) {
+	if (typeof window !== "undefined") {
+		if (typeof window.Promise === "undefined") {
+			window.Promise = polyfill;
+		} else if (!window.Promise.prototype.finally) {
+			window.Promise.prototype.finally = polyfill.prototype.finally;
+		}
+		module.exports = window.Promise;
+	} else if (typeof commonjsGlobal !== "undefined") {
+		if (typeof commonjsGlobal.Promise === "undefined") {
+			commonjsGlobal.Promise = polyfill;
+		} else if (!commonjsGlobal.Promise.prototype.finally) {
+			commonjsGlobal.Promise.prototype.finally = polyfill.prototype.finally;
+		}
+		module.exports = commonjsGlobal.Promise;
+	} else {
+		module.exports = polyfill;
+	}
+	});
+
+	var buildQueryString$1 = ( build && buildQueryString ) || build;
+
+	var FILE_PROTOCOL_REGEX = new RegExp("^file://", "i");
+
+	var request = function($window, Promise) {
+		var callbackCount = 0;
+
+		var oncompletion;
+		function setCompletionCallback(callback) {oncompletion = callback;}
+
+		function finalizer() {
+			var count = 0;
+			function complete() {if (--count === 0 && typeof oncompletion === "function") oncompletion();}
+
+			return function finalize(promise) {
+				var then = promise.then;
+				promise.then = function() {
+					count++;
+					var next = then.apply(promise, arguments);
+					next.then(complete, function(e) {
+						complete();
+						if (count === 0) throw e
+					});
+					return finalize(next)
+				};
+				return promise
+			}
+		}
+		function normalize(args, extra) {
+			if (typeof args === "string") {
+				var url = args;
+				args = extra || {};
+				if (args.url == null) args.url = url;
+			}
+			return args
+		}
+
+		function request(args, extra) {
+			var finalize = finalizer();
+			args = normalize(args, extra);
+
+			var promise = new Promise(function(resolve, reject) {
+				if (args.method == null) args.method = "GET";
+				args.method = args.method.toUpperCase();
+
+				var useBody = (args.method === "GET" || args.method === "TRACE") ? false : (typeof args.useBody === "boolean" ? args.useBody : true);
+
+				if (typeof args.serialize !== "function") args.serialize = typeof FormData !== "undefined" && args.data instanceof FormData ? function(value) {return value} : JSON.stringify;
+				if (typeof args.deserialize !== "function") args.deserialize = deserialize;
+				if (typeof args.extract !== "function") args.extract = extract;
+
+				args.url = interpolate(args.url, args.data);
+				if (useBody) args.data = args.serialize(args.data);
+				else args.url = assemble(args.url, args.data);
+
+				var xhr = new $window.XMLHttpRequest(),
+					aborted = false,
+					_abort = xhr.abort;
+
+
+				xhr.abort = function abort() {
+					aborted = true;
+					_abort.call(xhr);
+				};
+
+				xhr.open(args.method, args.url, typeof args.async === "boolean" ? args.async : true, typeof args.user === "string" ? args.user : undefined, typeof args.password === "string" ? args.password : undefined);
+
+				if (args.serialize === JSON.stringify && useBody && !(args.headers && args.headers.hasOwnProperty("Content-Type"))) {
+					xhr.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+				}
+				if (args.deserialize === deserialize && !(args.headers && args.headers.hasOwnProperty("Accept"))) {
+					xhr.setRequestHeader("Accept", "application/json, text/*");
+				}
+				if (args.withCredentials) xhr.withCredentials = args.withCredentials;
+
+				if (args.timeout) xhr.timeout = args.timeout;
+
+				for (var key in args.headers) if ({}.hasOwnProperty.call(args.headers, key)) {
+					xhr.setRequestHeader(key, args.headers[key]);
+				}
+
+				if (typeof args.config === "function") xhr = args.config(xhr, args) || xhr;
+
+				xhr.onreadystatechange = function() {
+					// Don't throw errors on xhr.abort().
+					if(aborted) return
+
+					if (xhr.readyState === 4) {
+						try {
+							var response = (args.extract !== extract) ? args.extract(xhr, args) : args.deserialize(args.extract(xhr, args));
+							if (args.extract !== extract || (xhr.status >= 200 && xhr.status < 300) || xhr.status === 304 || FILE_PROTOCOL_REGEX.test(args.url)) {
+								resolve(cast(args.type, response));
+							}
+							else {
+								var error = new Error(xhr.responseText);
+								error.code = xhr.status;
+								error.response = response;
+								reject(error);
+							}
+						}
+						catch (e) {
+							reject(e);
+						}
+					}
+				};
+
+				if (useBody && (args.data != null)) xhr.send(args.data);
+				else xhr.send();
+			});
+			return args.background === true ? promise : finalize(promise)
+		}
+
+		function jsonp(args, extra) {
+			var finalize = finalizer();
+			args = normalize(args, extra);
+
+			var promise = new Promise(function(resolve, reject) {
+				var callbackName = args.callbackName || "_mithril_" + Math.round(Math.random() * 1e16) + "_" + callbackCount++;
+				var script = $window.document.createElement("script");
+				$window[callbackName] = function(data) {
+					script.parentNode.removeChild(script);
+					resolve(cast(args.type, data));
+					delete $window[callbackName];
+				};
+				script.onerror = function() {
+					script.parentNode.removeChild(script);
+					reject(new Error("JSONP request failed"));
+					delete $window[callbackName];
+				};
+				if (args.data == null) args.data = {};
+				args.url = interpolate(args.url, args.data);
+				args.data[args.callbackKey || "callback"] = callbackName;
+				script.src = assemble(args.url, args.data);
+				$window.document.documentElement.appendChild(script);
+			});
+			return args.background === true? promise : finalize(promise)
+		}
+
+		function interpolate(url, data) {
+			if (data == null) return url
+
+			var tokens = url.match(/:[^\/]+/gi) || [];
+			for (var i = 0; i < tokens.length; i++) {
+				var key = tokens[i].slice(1);
+				if (data[key] != null) {
+					url = url.replace(tokens[i], data[key]);
+				}
+			}
+			return url
+		}
+
+		function assemble(url, data) {
+			var querystring = buildQueryString$1(data);
+			if (querystring !== "") {
+				var prefix = url.indexOf("?") < 0 ? "?" : "&";
+				url += prefix + querystring;
+			}
+			return url
+		}
+
+		function deserialize(data) {
+			try {return data !== "" ? JSON.parse(data) : null}
+			catch (e) {throw new Error(data)}
+		}
+
+		function extract(xhr) {return xhr.responseText}
+
+		function cast(type, data) {
+			if (typeof type === "function") {
+				if (Array.isArray(data)) {
+					for (var i = 0; i < data.length; i++) {
+						data[i] = new type(data[i]);
+					}
+				}
+				else return new type(data)
+			}
+			return data
+		}
+
+		return {request: request, jsonp: jsonp, setCompletionCallback: setCompletionCallback}
 	};
+
+	var request$1 = request(window, promise);
+
+	var parseQueryString$1 = ( parse && parseQueryString ) || parse;
 
 	var router = function($window) {
 		var supportsPushState = typeof $window.history.pushState === "function";
@@ -1457,11 +1468,11 @@
 			var pathEnd = queryIndex > -1 ? queryIndex : hashIndex > -1 ? hashIndex : path.length;
 			if (queryIndex > -1) {
 				var queryEnd = hashIndex > -1 ? hashIndex : path.length;
-				var queryParams = parse(path.slice(queryIndex + 1, queryEnd));
+				var queryParams = parseQueryString$1(path.slice(queryIndex + 1, queryEnd));
 				for (var key in queryParams) queryData[key] = queryParams[key];
 			}
 			if (hashIndex > -1) {
-				var hashParams = parse(path.slice(hashIndex + 1));
+				var hashParams = parseQueryString$1(path.slice(hashIndex + 1));
 				for (var key in hashParams) hashData[key] = hashParams[key];
 			}
 			return path.slice(0, pathEnd)
@@ -1487,10 +1498,10 @@
 				});
 			}
 
-			var query = build(queryData);
+			var query = buildQueryString$1(queryData);
 			if (query) path += "?" + query;
 
-			var hash = build(hashData);
+			var hash = buildQueryString$1(hashData);
 			if (hash) path += "#" + hash;
 
 			if (supportsPushState) {
@@ -1618,25 +1629,23 @@
 		}
 	};
 
-	var render$1 = render(window);
-
 	request$1.setCompletionCallback(redraw$1.redraw);
 
-	hyperscript_1$1.mount = mount$1;
-	hyperscript_1$1.route = route;
-	hyperscript_1$1.withAttr = withAttr;
-	hyperscript_1$1.render = render$1.render;
-	hyperscript_1$1.redraw = redraw$1.redraw;
-	hyperscript_1$1.request = request$1.request;
-	hyperscript_1$1.jsonp = request$1.jsonp;
-	hyperscript_1$1.parseQueryString = parse;
-	hyperscript_1$1.buildQueryString = build;
 	hyperscript_1$1.version = "bleeding-edge";
-	hyperscript_1$1.vnode = vnode;
+
 	hyperscript_1$1.PromisePolyfill = polyfill;
 
-	var mithril_js = hyperscript_1$1;
+	hyperscript_1$1.buildQueryString = buildQueryString;
+	hyperscript_1$1.jsonp = request$1.jsonp;
+	hyperscript_1$1.mount = mount$1;
+	hyperscript_1$1.parseQueryString = parseQueryString;
+	hyperscript_1$1.redraw = redraw$1.redraw;
+	hyperscript_1$1.render = render$1;
+	hyperscript_1$1.request = request$1.request;
+	hyperscript_1$1.route = route;
+	hyperscript_1$1.vnode = vnode;
+	hyperscript_1$1.withAttr = withAttr;
 
-	return mithril_js;
+	return hyperscript_1$1;
 
 })));

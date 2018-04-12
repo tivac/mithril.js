@@ -1,22 +1,32 @@
-"use strict"
+import m from "./hyperscript.js"
 
-var m = require("./hyperscript")
-var requestService = require("./request")
-var redrawService = require("./redraw")
+import PromisePolyfill from "./promise/polyfill.js"
+
+import buildQueryString from "./querystring/build.js"
+import mount from "./mount.js"
+import parseQueryString from "./querystring/parse.js"
+import redrawService from "./redraw.js"
+import render from "./render.js"
+import requestService from "./request.js"
+import route from "./route.js"
+import vnode from "./render/vnode.js"
+import withAttr from "./util/withAttr.js"
 
 requestService.setCompletionCallback(redrawService.redraw)
 
-m.mount = require("./mount")
-m.route = require("./route")
-m.withAttr = require("./util/withAttr")
-m.render = require("./render").render
-m.redraw = redrawService.redraw
-m.request = requestService.request
-m.jsonp = requestService.jsonp
-m.parseQueryString = require("./querystring/parse")
-m.buildQueryString = require("./querystring/build")
 m.version = "bleeding-edge"
-m.vnode = require("./render/vnode")
-m.PromisePolyfill = require("./promise/polyfill")
 
-module.exports = m
+m.PromisePolyfill = PromisePolyfill
+
+m.buildQueryString = buildQueryString
+m.jsonp = requestService.jsonp
+m.mount = mount
+m.parseQueryString = parseQueryString
+m.redraw = redrawService.redraw
+m.render = render
+m.request = requestService.request
+m.route = route
+m.vnode = vnode
+m.withAttr = withAttr
+
+export default m
