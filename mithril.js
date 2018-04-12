@@ -7,6 +7,7 @@
 	function Vnode(tag, key, attrs, children, text, dom) {
 		return {tag: tag, key: key, attrs: attrs, children: children, text: text, dom: dom, domSize: undefined, state: undefined, events: undefined, instance: undefined, skip: false}
 	}
+
 	Vnode.normalize = function(node) {
 		if (Array.isArray(node)) return Vnode("[", undefined, undefined, Vnode.normalizeChildren(node), undefined, undefined)
 		if (node != null && typeof node !== "object") return Vnode("#", undefined, undefined, node === false ? "" : node, undefined, undefined)
@@ -19,11 +20,9 @@
 		return children
 	};
 
-	var vnode = Vnode;
-
-	var fragment = function(attrs, children) {
-		return vnode("[", attrs.key, attrs, vnode.normalizeChildren(children), undefined, undefined)
-	};
+	function fragment(attrs, children) {
+		return Vnode("[", attrs.key, attrs, Vnode.normalizeChildren(children), undefined, undefined)
+	}
 
 	var selectorParser = /(?:(^|#|\.)([^#\.\[\]]+))|(\[(.+?)(?:\s*=\s*("|'|)((?:\\["'\]]|.)*?)\5)?\])/g;
 	var selectorCache = {};
@@ -98,7 +97,7 @@
 			childList = children;
 		}
 
-		return vnode(state.tag, attrs.key, hasAttrs ? attrs : undefined, childList, text)
+		return Vnode(state.tag, attrs.key, hasAttrs ? attrs : undefined, childList, text)
 	}
 
 	function hyperscript(selector) {
@@ -128,24 +127,22 @@
 			while (start < arguments.length) children.push(arguments[start++]);
 		}
 
-		var normalized = vnode.normalizeChildren(children);
+		var normalized = Vnode.normalizeChildren(children);
 
 		if (typeof selector === "string") {
 			return execSelector(cached, attrs, normalized)
 		} else {
-			return vnode(selector, attrs.key, attrs, normalized)
+			return Vnode(selector, attrs.key, attrs, normalized)
 		}
 	}
 
-	var hyperscript_1 = hyperscript;
-
-	var trust = function(html) {
+	function trust(html) {
 		if (html == null) html = "";
-		return vnode("<", undefined, undefined, html, undefined, undefined)
-	};
+		return Vnode("<", undefined, undefined, html, undefined, undefined)
+	}
 
-	hyperscript_1.trust = trust;
-	hyperscript_1.fragment = fragment;
+	hyperscript.trust = trust;
+	hyperscript.fragment = fragment;
 
 	/** @constructor */
 	var PromisePolyfill = function(executor) {
@@ -297,14 +294,14 @@
 			if (component.view == null && typeof component !== "function") throw new Error("m.mount(element, component) expects a component, not a vnode")
 
 			var run = function() {
-				redrawService.render(root, vnode(component));
+				redrawService.render(root, Vnode(component));
 			};
 			redrawService.subscribe(root, run);
 			run();
 		}
 	}
 
-	var render = function($window) {
+	function render($window) {
 		var $doc = $window.document;
 		var $emptyFragment = $doc.createDocumentFragment();
 
@@ -316,59 +313,59 @@
 		var onevent;
 		function setEventCallback(callback) {return onevent = callback}
 
-		function getNameSpace(vnode$$1) {
-			return vnode$$1.attrs && vnode$$1.attrs.xmlns || nameSpace[vnode$$1.tag]
+		function getNameSpace(vnode) {
+			return vnode.attrs && vnode.attrs.xmlns || nameSpace[vnode.tag]
 		}
 
 		//sanity check to discourage people from doing `vnode.state = ...`
-		function checkState(vnode$$1, original) {
-			if (vnode$$1.state !== original) throw new Error("`vnode.state` must not be modified")
+		function checkState(vnode, original) {
+			if (vnode.state !== original) throw new Error("`vnode.state` must not be modified")
 		}
 
 		//Note: the hook is passed as the `this` argument to allow proxying the
 		//arguments without requiring a full array allocation to do so. It also
 		//takes advantage of the fact the current `vnode` is the first argument in
 		//all lifecycle methods.
-		function callHook(vnode$$1) {
-			var original = vnode$$1.state;
+		function callHook(vnode) {
+			var original = vnode.state;
 			try {
 				return this.apply(original, arguments)
 			} finally {
-				checkState(vnode$$1, original);
+				checkState(vnode, original);
 			}
 		}
 
 		//create
 		function createNodes(parent, vnodes, start, end, hooks, nextSibling, ns) {
 			for (var i = start; i < end; i++) {
-				var vnode$$1 = vnodes[i];
-				if (vnode$$1 != null) {
-					createNode(parent, vnode$$1, hooks, ns, nextSibling);
+				var vnode = vnodes[i];
+				if (vnode != null) {
+					createNode(parent, vnode, hooks, ns, nextSibling);
 				}
 			}
 		}
-		function createNode(parent, vnode$$1, hooks, ns, nextSibling) {
-			var tag = vnode$$1.tag;
+		function createNode(parent, vnode, hooks, ns, nextSibling) {
+			var tag = vnode.tag;
 			if (typeof tag === "string") {
-				vnode$$1.state = {};
-				if (vnode$$1.attrs != null) initLifecycle(vnode$$1.attrs, vnode$$1, hooks);
+				vnode.state = {};
+				if (vnode.attrs != null) initLifecycle(vnode.attrs, vnode, hooks);
 				switch (tag) {
-					case "#": return createText(parent, vnode$$1, nextSibling)
-					case "<": return createHTML(parent, vnode$$1, ns, nextSibling)
-					case "[": return createFragment(parent, vnode$$1, hooks, ns, nextSibling)
-					default: return createElement(parent, vnode$$1, hooks, ns, nextSibling)
+					case "#": return createText(parent, vnode, nextSibling)
+					case "<": return createHTML(parent, vnode, ns, nextSibling)
+					case "[": return createFragment(parent, vnode, hooks, ns, nextSibling)
+					default: return createElement(parent, vnode, hooks, ns, nextSibling)
 				}
 			}
-			else return createComponent(parent, vnode$$1, hooks, ns, nextSibling)
+			else return createComponent(parent, vnode, hooks, ns, nextSibling)
 		}
-		function createText(parent, vnode$$1, nextSibling) {
-			vnode$$1.dom = $doc.createTextNode(vnode$$1.children);
-			insertNode(parent, vnode$$1.dom, nextSibling);
-			return vnode$$1.dom
+		function createText(parent, vnode, nextSibling) {
+			vnode.dom = $doc.createTextNode(vnode.children);
+			insertNode(parent, vnode.dom, nextSibling);
+			return vnode.dom
 		}
 		var possibleParents = {caption: "table", thead: "table", tbody: "table", tfoot: "table", tr: "tbody", th: "tr", td: "tr", colgroup: "table", col: "colgroup"};
-		function createHTML(parent, vnode$$1, ns, nextSibling) {
-			var match = vnode$$1.children.match(/^\s*?<(\w+)/im) || [];
+		function createHTML(parent, vnode, ns, nextSibling) {
+			var match = vnode.children.match(/^\s*?<(\w+)/im) || [];
 			// not using the proper parent makes the child element(s) vanish.
 			//     var div = document.createElement("div")
 			//     div.innerHTML = "<td>i</td><td>j</td>"
@@ -376,13 +373,13 @@
 			// --> "ij", no <td> in sight.
 			var temp = $doc.createElement(possibleParents[match[1]] || "div");
 			if (ns === "http://www.w3.org/2000/svg") {
-				temp.innerHTML = "<svg xmlns=\"http://www.w3.org/2000/svg\">" + vnode$$1.children + "</svg>";
+				temp.innerHTML = "<svg xmlns=\"http://www.w3.org/2000/svg\">" + vnode.children + "</svg>";
 				temp = temp.firstChild;
 			} else {
-				temp.innerHTML = vnode$$1.children;
+				temp.innerHTML = vnode.children;
 			}
-			vnode$$1.dom = temp.firstChild;
-			vnode$$1.domSize = temp.childNodes.length;
+			vnode.dom = temp.firstChild;
+			vnode.domSize = temp.childNodes.length;
 			var fragment = $doc.createDocumentFragment();
 			var child;
 			while (child = temp.firstChild) {
@@ -391,82 +388,82 @@
 			insertNode(parent, fragment, nextSibling);
 			return fragment
 		}
-		function createFragment(parent, vnode$$1, hooks, ns, nextSibling) {
+		function createFragment(parent, vnode, hooks, ns, nextSibling) {
 			var fragment = $doc.createDocumentFragment();
-			if (vnode$$1.children != null) {
-				var children = vnode$$1.children;
+			if (vnode.children != null) {
+				var children = vnode.children;
 				createNodes(fragment, children, 0, children.length, hooks, null, ns);
 			}
-			vnode$$1.dom = fragment.firstChild;
-			vnode$$1.domSize = fragment.childNodes.length;
+			vnode.dom = fragment.firstChild;
+			vnode.domSize = fragment.childNodes.length;
 			insertNode(parent, fragment, nextSibling);
 			return fragment
 		}
-		function createElement(parent, vnode$$1, hooks, ns, nextSibling) {
-			var tag = vnode$$1.tag;
-			var attrs = vnode$$1.attrs;
+		function createElement(parent, vnode, hooks, ns, nextSibling) {
+			var tag = vnode.tag;
+			var attrs = vnode.attrs;
 			var is = attrs && attrs.is;
 
-			ns = getNameSpace(vnode$$1) || ns;
+			ns = getNameSpace(vnode) || ns;
 
 			var element = ns ?
 				is ? $doc.createElementNS(ns, tag, {is: is}) : $doc.createElementNS(ns, tag) :
 				is ? $doc.createElement(tag, {is: is}) : $doc.createElement(tag);
-			vnode$$1.dom = element;
+			vnode.dom = element;
 
 			if (attrs != null) {
-				setAttrs(vnode$$1, attrs, ns);
+				setAttrs(vnode, attrs, ns);
 			}
 
 			insertNode(parent, element, nextSibling);
 
-			if (vnode$$1.attrs != null && vnode$$1.attrs.contenteditable != null) {
-				setContentEditable(vnode$$1);
+			if (vnode.attrs != null && vnode.attrs.contenteditable != null) {
+				setContentEditable(vnode);
 			}
 			else {
-				if (vnode$$1.text != null) {
-					if (vnode$$1.text !== "") element.textContent = vnode$$1.text;
-					else vnode$$1.children = [vnode("#", undefined, undefined, vnode$$1.text, undefined, undefined)];
+				if (vnode.text != null) {
+					if (vnode.text !== "") element.textContent = vnode.text;
+					else vnode.children = [Vnode("#", undefined, undefined, vnode.text, undefined, undefined)];
 				}
-				if (vnode$$1.children != null) {
-					var children = vnode$$1.children;
+				if (vnode.children != null) {
+					var children = vnode.children;
 					createNodes(element, children, 0, children.length, hooks, null, ns);
-					setLateAttrs(vnode$$1);
+					setLateAttrs(vnode);
 				}
 			}
 			return element
 		}
-		function initComponent(vnode$$1, hooks) {
+		function initComponent(vnode, hooks) {
 			var sentinel;
-			if (typeof vnode$$1.tag.view === "function") {
-				vnode$$1.state = Object.create(vnode$$1.tag);
-				sentinel = vnode$$1.state.view;
+			if (typeof vnode.tag.view === "function") {
+				vnode.state = Object.create(vnode.tag);
+				sentinel = vnode.state.view;
 				if (sentinel.$$reentrantLock$$ != null) return $emptyFragment
 				sentinel.$$reentrantLock$$ = true;
 			} else {
-				vnode$$1.state = void 0;
-				sentinel = vnode$$1.tag;
+				vnode.state = void 0;
+				sentinel = vnode.tag;
 				if (sentinel.$$reentrantLock$$ != null) return $emptyFragment
 				sentinel.$$reentrantLock$$ = true;
-				vnode$$1.state = (vnode$$1.tag.prototype != null && typeof vnode$$1.tag.prototype.view === "function") ? new vnode$$1.tag(vnode$$1) : vnode$$1.tag(vnode$$1);
+				vnode.state = (vnode.tag.prototype != null && typeof vnode.tag.prototype.view === "function") ? new vnode.tag(vnode) : vnode.tag(vnode);
 			}
-			if (vnode$$1.attrs != null) initLifecycle(vnode$$1.attrs, vnode$$1, hooks);
-			initLifecycle(vnode$$1.state, vnode$$1, hooks);
-			vnode$$1.instance = vnode.normalize(callHook.call(vnode$$1.state.view, vnode$$1));
-			if (vnode$$1.instance === vnode$$1) throw Error("A view cannot return the vnode it received as argument")
+			if (vnode.attrs != null) initLifecycle(vnode.attrs, vnode, hooks);
+			initLifecycle(vnode.state, vnode, hooks);
+			vnode.instance = Vnode.normalize(callHook.call(vnode.state.view, vnode));
+			if (vnode.instance === vnode) throw Error("A view cannot return the vnode it received as argument")
 			sentinel.$$reentrantLock$$ = null;
 		}
-		function createComponent(parent, vnode$$1, hooks, ns, nextSibling) {
-			initComponent(vnode$$1, hooks);
-			if (vnode$$1.instance != null) {
-				var element = createNode(parent, vnode$$1.instance, hooks, ns, nextSibling);
-				vnode$$1.dom = vnode$$1.instance.dom;
-				vnode$$1.domSize = vnode$$1.dom != null ? vnode$$1.instance.domSize : 0;
+		function createComponent(parent, vnode, hooks, ns, nextSibling) {
+			initComponent(vnode, hooks);
+			if (vnode.instance != null) {
+				var element = createNode(parent, vnode.instance, hooks, ns, nextSibling);
+				vnode.dom = vnode.instance.dom;
+				vnode.domSize = vnode.dom != null ? vnode.instance.domSize : 0;
 				insertNode(parent, element, nextSibling);
 				return element
 			}
 			else {
-				vnode$$1.domSize = 0;
+				vnode.domSize = 0;
 				return $emptyFragment
 			}
 		}
@@ -699,109 +696,109 @@
 		}
 		// when recycling, we're re-using an old DOM node, but firing the oninit/oncreate hooks
 		// instead of onbeforeupdate/onupdate.
-		function updateNode(parent, old, vnode$$1, hooks, nextSibling, recycling, ns) {
-			var oldTag = old.tag, tag = vnode$$1.tag;
+		function updateNode(parent, old, vnode, hooks, nextSibling, recycling, ns) {
+			var oldTag = old.tag, tag = vnode.tag;
 			if (oldTag === tag) {
-				vnode$$1.state = old.state;
-				vnode$$1.events = old.events;
-				if (!recycling && shouldNotUpdate(vnode$$1, old)) return
+				vnode.state = old.state;
+				vnode.events = old.events;
+				if (!recycling && shouldNotUpdate(vnode, old)) return
 				if (typeof oldTag === "string") {
-					if (vnode$$1.attrs != null) {
+					if (vnode.attrs != null) {
 						if (recycling) {
-							vnode$$1.state = {};
-							initLifecycle(vnode$$1.attrs, vnode$$1, hooks);
+							vnode.state = {};
+							initLifecycle(vnode.attrs, vnode, hooks);
 						}
-						else updateLifecycle(vnode$$1.attrs, vnode$$1, hooks);
+						else updateLifecycle(vnode.attrs, vnode, hooks);
 					}
 					switch (oldTag) {
-						case "#": updateText(old, vnode$$1); break
-						case "<": updateHTML(parent, old, vnode$$1, ns, nextSibling); break
-						case "[": updateFragment(parent, old, vnode$$1, recycling, hooks, nextSibling, ns); break
-						default: updateElement(old, vnode$$1, recycling, hooks, ns);
+						case "#": updateText(old, vnode); break
+						case "<": updateHTML(parent, old, vnode, ns, nextSibling); break
+						case "[": updateFragment(parent, old, vnode, recycling, hooks, nextSibling, ns); break
+						default: updateElement(old, vnode, recycling, hooks, ns);
 					}
 				}
-				else updateComponent(parent, old, vnode$$1, hooks, nextSibling, recycling, ns);
+				else updateComponent(parent, old, vnode, hooks, nextSibling, recycling, ns);
 			}
 			else {
 				removeNode(old, null, recycling);
-				createNode(parent, vnode$$1, hooks, ns, nextSibling);
+				createNode(parent, vnode, hooks, ns, nextSibling);
 			}
 		}
-		function updateText(old, vnode$$1) {
-			if (old.children.toString() !== vnode$$1.children.toString()) {
-				old.dom.nodeValue = vnode$$1.children;
+		function updateText(old, vnode) {
+			if (old.children.toString() !== vnode.children.toString()) {
+				old.dom.nodeValue = vnode.children;
 			}
-			vnode$$1.dom = old.dom;
+			vnode.dom = old.dom;
 		}
-		function updateHTML(parent, old, vnode$$1, ns, nextSibling) {
-			if (old.children !== vnode$$1.children) {
+		function updateHTML(parent, old, vnode, ns, nextSibling) {
+			if (old.children !== vnode.children) {
 				toFragment(old);
-				createHTML(parent, vnode$$1, ns, nextSibling);
+				createHTML(parent, vnode, ns, nextSibling);
 			}
-			else vnode$$1.dom = old.dom, vnode$$1.domSize = old.domSize;
+			else vnode.dom = old.dom, vnode.domSize = old.domSize;
 		}
-		function updateFragment(parent, old, vnode$$1, recycling, hooks, nextSibling, ns) {
-			updateNodes(parent, old.children, vnode$$1.children, recycling, hooks, nextSibling, ns);
-			var domSize = 0, children = vnode$$1.children;
-			vnode$$1.dom = null;
+		function updateFragment(parent, old, vnode, recycling, hooks, nextSibling, ns) {
+			updateNodes(parent, old.children, vnode.children, recycling, hooks, nextSibling, ns);
+			var domSize = 0, children = vnode.children;
+			vnode.dom = null;
 			if (children != null) {
 				for (var i = 0; i < children.length; i++) {
 					var child = children[i];
 					if (child != null && child.dom != null) {
-						if (vnode$$1.dom == null) vnode$$1.dom = child.dom;
+						if (vnode.dom == null) vnode.dom = child.dom;
 						domSize += child.domSize || 1;
 					}
 				}
-				if (domSize !== 1) vnode$$1.domSize = domSize;
+				if (domSize !== 1) vnode.domSize = domSize;
 			}
 		}
-		function updateElement(old, vnode$$1, recycling, hooks, ns) {
-			var element = vnode$$1.dom = old.dom;
-			ns = getNameSpace(vnode$$1) || ns;
+		function updateElement(old, vnode, recycling, hooks, ns) {
+			var element = vnode.dom = old.dom;
+			ns = getNameSpace(vnode) || ns;
 
-			if (vnode$$1.tag === "textarea") {
-				if (vnode$$1.attrs == null) vnode$$1.attrs = {};
-				if (vnode$$1.text != null) {
-					vnode$$1.attrs.value = vnode$$1.text; //FIXME handle multiple children
-					vnode$$1.text = undefined;
+			if (vnode.tag === "textarea") {
+				if (vnode.attrs == null) vnode.attrs = {};
+				if (vnode.text != null) {
+					vnode.attrs.value = vnode.text; //FIXME handle multiple children
+					vnode.text = undefined;
 				}
 			}
-			updateAttrs(vnode$$1, old.attrs, vnode$$1.attrs, ns);
-			if (vnode$$1.attrs != null && vnode$$1.attrs.contenteditable != null) {
-				setContentEditable(vnode$$1);
+			updateAttrs(vnode, old.attrs, vnode.attrs, ns);
+			if (vnode.attrs != null && vnode.attrs.contenteditable != null) {
+				setContentEditable(vnode);
 			}
-			else if (old.text != null && vnode$$1.text != null && vnode$$1.text !== "") {
-				if (old.text.toString() !== vnode$$1.text.toString()) old.dom.firstChild.nodeValue = vnode$$1.text;
+			else if (old.text != null && vnode.text != null && vnode.text !== "") {
+				if (old.text.toString() !== vnode.text.toString()) old.dom.firstChild.nodeValue = vnode.text;
 			}
 			else {
-				if (old.text != null) old.children = [vnode("#", undefined, undefined, old.text, undefined, old.dom.firstChild)];
-				if (vnode$$1.text != null) vnode$$1.children = [vnode("#", undefined, undefined, vnode$$1.text, undefined, undefined)];
-				updateNodes(element, old.children, vnode$$1.children, recycling, hooks, null, ns);
+				if (old.text != null) old.children = [Vnode("#", undefined, undefined, old.text, undefined, old.dom.firstChild)];
+				if (vnode.text != null) vnode.children = [Vnode("#", undefined, undefined, vnode.text, undefined, undefined)];
+				updateNodes(element, old.children, vnode.children, recycling, hooks, null, ns);
 			}
 		}
-		function updateComponent(parent, old, vnode$$1, hooks, nextSibling, recycling, ns) {
+		function updateComponent(parent, old, vnode, hooks, nextSibling, recycling, ns) {
 			if (recycling) {
-				initComponent(vnode$$1, hooks);
+				initComponent(vnode, hooks);
 			} else {
-				vnode$$1.instance = vnode.normalize(callHook.call(vnode$$1.state.view, vnode$$1));
-				if (vnode$$1.instance === vnode$$1) throw Error("A view cannot return the vnode it received as argument")
-				if (vnode$$1.attrs != null) updateLifecycle(vnode$$1.attrs, vnode$$1, hooks);
-				updateLifecycle(vnode$$1.state, vnode$$1, hooks);
+				vnode.instance = Vnode.normalize(callHook.call(vnode.state.view, vnode));
+				if (vnode.instance === vnode) throw Error("A view cannot return the vnode it received as argument")
+				if (vnode.attrs != null) updateLifecycle(vnode.attrs, vnode, hooks);
+				updateLifecycle(vnode.state, vnode, hooks);
 			}
-			if (vnode$$1.instance != null) {
-				if (old.instance == null) createNode(parent, vnode$$1.instance, hooks, ns, nextSibling);
-				else updateNode(parent, old.instance, vnode$$1.instance, hooks, nextSibling, recycling, ns);
-				vnode$$1.dom = vnode$$1.instance.dom;
-				vnode$$1.domSize = vnode$$1.instance.domSize;
+			if (vnode.instance != null) {
+				if (old.instance == null) createNode(parent, vnode.instance, hooks, ns, nextSibling);
+				else updateNode(parent, old.instance, vnode.instance, hooks, nextSibling, recycling, ns);
+				vnode.dom = vnode.instance.dom;
+				vnode.domSize = vnode.instance.domSize;
 			}
 			else if (old.instance != null) {
 				removeNode(old.instance, null, recycling);
-				vnode$$1.dom = undefined;
-				vnode$$1.domSize = 0;
+				vnode.dom = undefined;
+				vnode.domSize = 0;
 			}
 			else {
-				vnode$$1.dom = old.dom;
-				vnode$$1.domSize = old.domSize;
+				vnode.dom = old.dom;
+				vnode.domSize = old.domSize;
 			}
 		}
 		function isRecyclable(old, vnodes) {
@@ -818,26 +815,26 @@
 		function getKeyMap(vnodes, end) {
 			var map = {}, i = 0;
 			for (var i = 0; i < end; i++) {
-				var vnode$$1 = vnodes[i];
-				if (vnode$$1 != null) {
-					var key = vnode$$1.key;
+				var vnode = vnodes[i];
+				if (vnode != null) {
+					var key = vnode.key;
 					if (key != null) map[key] = i;
 				}
 			}
 			return map
 		}
-		function toFragment(vnode$$1) {
-			var count = vnode$$1.domSize;
-			if (count != null || vnode$$1.dom == null) {
+		function toFragment(vnode) {
+			var count = vnode.domSize;
+			if (count != null || vnode.dom == null) {
 				var fragment = $doc.createDocumentFragment();
 				if (count > 0) {
-					var dom = vnode$$1.dom;
+					var dom = vnode.dom;
 					while (--count) fragment.appendChild(dom.nextSibling);
 					fragment.insertBefore(dom, fragment.firstChild);
 				}
 				return fragment
 			}
-			else return vnode$$1.dom
+			else return vnode.dom
 		}
 		// the vnodes array may hold items that come from the pool (after `limit`) they should
 		// be ignored
@@ -853,40 +850,40 @@
 			else parent.appendChild(dom);
 		}
 
-		function setContentEditable(vnode$$1) {
-			var children = vnode$$1.children;
+		function setContentEditable(vnode) {
+			var children = vnode.children;
 			if (children != null && children.length === 1 && children[0].tag === "<") {
 				var content = children[0].children;
-				if (vnode$$1.dom.innerHTML !== content) vnode$$1.dom.innerHTML = content;
+				if (vnode.dom.innerHTML !== content) vnode.dom.innerHTML = content;
 			}
-			else if (vnode$$1.text != null || children != null && children.length !== 0) throw new Error("Child node of a contenteditable must be trusted")
+			else if (vnode.text != null || children != null && children.length !== 0) throw new Error("Child node of a contenteditable must be trusted")
 		}
 
 		//remove
 		function removeNodes(vnodes, start, end, context, recycling) {
 			for (var i = start; i < end; i++) {
-				var vnode$$1 = vnodes[i];
-				if (vnode$$1 != null) {
-					if (vnode$$1.skip) vnode$$1.skip = false;
-					else removeNode(vnode$$1, context, recycling);
+				var vnode = vnodes[i];
+				if (vnode != null) {
+					if (vnode.skip) vnode.skip = false;
+					else removeNode(vnode, context, recycling);
 				}
 			}
 		}
 		// when a node is removed from a parent that's brought back from the pool, its hooks should
 		// not fire.
-		function removeNode(vnode$$1, context, recycling) {
+		function removeNode(vnode, context, recycling) {
 			var expected = 1, called = 0;
 			if (!recycling) {
-				var original = vnode$$1.state;
-				if (vnode$$1.attrs && typeof vnode$$1.attrs.onbeforeremove === "function") {
-					var result = callHook.call(vnode$$1.attrs.onbeforeremove, vnode$$1);
+				var original = vnode.state;
+				if (vnode.attrs && typeof vnode.attrs.onbeforeremove === "function") {
+					var result = callHook.call(vnode.attrs.onbeforeremove, vnode);
 					if (result != null && typeof result.then === "function") {
 						expected++;
 						result.then(continuation, continuation);
 					}
 				}
-				if (typeof vnode$$1.tag !== "string" && typeof vnode$$1.state.onbeforeremove === "function") {
-					var result = callHook.call(vnode$$1.state.onbeforeremove, vnode$$1);
+				if (typeof vnode.tag !== "string" && typeof vnode.state.onbeforeremove === "function") {
+					var result = callHook.call(vnode.state.onbeforeremove, vnode);
 					if (result != null && typeof result.then === "function") {
 						expected++;
 						result.then(continuation, continuation);
@@ -897,19 +894,19 @@
 			function continuation() {
 				if (++called === expected) {
 					if (!recycling) {
-						checkState(vnode$$1, original);
-						onremove(vnode$$1);
+						checkState(vnode, original);
+						onremove(vnode);
 					}
-					if (vnode$$1.dom) {
-						var count = vnode$$1.domSize || 1;
+					if (vnode.dom) {
+						var count = vnode.domSize || 1;
 						if (count > 1) {
-							var dom = vnode$$1.dom;
+							var dom = vnode.dom;
 							while (--count) {
 								removeNodeFromDOM(dom.nextSibling);
 							}
 						}
-						removeNodeFromDOM(vnode$$1.dom);
-						addToPool(vnode$$1, context);
+						removeNodeFromDOM(vnode.dom);
+						addToPool(vnode, context);
 					}
 				}
 			}
@@ -918,19 +915,19 @@
 			var parent = node.parentNode;
 			if (parent != null) parent.removeChild(node);
 		}
-		function addToPool(vnode$$1, context) {
-			if (context != null && vnode$$1.domSize == null && !hasIntegrationMethods(vnode$$1.attrs) && typeof vnode$$1.tag === "string") { //TODO test custom elements
-				if (!context.pool) context.pool = [vnode$$1];
-				else context.pool.push(vnode$$1);
+		function addToPool(vnode, context) {
+			if (context != null && vnode.domSize == null && !hasIntegrationMethods(vnode.attrs) && typeof vnode.tag === "string") { //TODO test custom elements
+				if (!context.pool) context.pool = [vnode];
+				else context.pool.push(vnode);
 			}
 		}
-		function onremove(vnode$$1) {
-			if (vnode$$1.attrs && typeof vnode$$1.attrs.onremove === "function") callHook.call(vnode$$1.attrs.onremove, vnode$$1);
-			if (typeof vnode$$1.tag !== "string") {
-				if (typeof vnode$$1.state.onremove === "function") callHook.call(vnode$$1.state.onremove, vnode$$1);
-				if (vnode$$1.instance != null) onremove(vnode$$1.instance);
+		function onremove(vnode) {
+			if (vnode.attrs && typeof vnode.attrs.onremove === "function") callHook.call(vnode.attrs.onremove, vnode);
+			if (typeof vnode.tag !== "string") {
+				if (typeof vnode.state.onremove === "function") callHook.call(vnode.state.onremove, vnode);
+				if (vnode.instance != null) onremove(vnode.instance);
 			} else {
-				var children = vnode$$1.children;
+				var children = vnode.children;
 				if (Array.isArray(children)) {
 					for (var i = 0; i < children.length; i++) {
 						var child = children[i];
@@ -941,40 +938,40 @@
 		}
 
 		//attrs
-		function setAttrs(vnode$$1, attrs, ns) {
+		function setAttrs(vnode, attrs, ns) {
 			for (var key in attrs) {
-				setAttr(vnode$$1, key, null, attrs[key], ns);
+				setAttr(vnode, key, null, attrs[key], ns);
 			}
 		}
-		function setAttr(vnode$$1, key, old, value, ns) {
+		function setAttr(vnode, key, old, value, ns) {
 			if (key === "key" || key === "is" || isLifecycleMethod(key)) return
-			if (key[0] === "o" && key[1] === "n") return updateEvent(vnode$$1, key, value)
+			if (key[0] === "o" && key[1] === "n") return updateEvent(vnode, key, value)
 			if (typeof value === "undefined" && key === "value" && old !== value) {
-				vnode$$1.dom.value = "";
+				vnode.dom.value = "";
 				return
 			}
-			if ((old === value && !isFormAttribute(vnode$$1, key)) && typeof value !== "object" || value === undefined) return
-			var element = vnode$$1.dom;
+			if ((old === value && !isFormAttribute(vnode, key)) && typeof value !== "object" || value === undefined) return
+			var element = vnode.dom;
 			if (key.slice(0, 6) === "xlink:") element.setAttributeNS("http://www.w3.org/1999/xlink", key, value);
 			else if (key === "style") updateStyle(element, old, value);
-			else if (key in element && !isAttribute(key) && ns === undefined && !isCustomElement(vnode$$1)) {
+			else if (key in element && !isAttribute(key) && ns === undefined && !isCustomElement(vnode)) {
 				if (key === "value") {
 					var normalized = "" + value; // eslint-disable-line no-implicit-coercion
 					//setting input[value] to same value by typing on focused element moves cursor to end in Chrome
-					if ((vnode$$1.tag === "input" || vnode$$1.tag === "textarea") && vnode$$1.dom.value === normalized && vnode$$1.dom === $doc.activeElement) return
+					if ((vnode.tag === "input" || vnode.tag === "textarea") && vnode.dom.value === normalized && vnode.dom === $doc.activeElement) return
 					//setting select[value] to same value while having select open blinks select dropdown in Chrome
-					if (vnode$$1.tag === "select") {
+					if (vnode.tag === "select") {
 						if (value === null) {
-							if (vnode$$1.dom.selectedIndex === -1 && vnode$$1.dom === $doc.activeElement) return
+							if (vnode.dom.selectedIndex === -1 && vnode.dom === $doc.activeElement) return
 						} else {
-							if (old !== null && vnode$$1.dom.value === normalized && vnode$$1.dom === $doc.activeElement) return
+							if (old !== null && vnode.dom.value === normalized && vnode.dom === $doc.activeElement) return
 						}
 					}
 					//setting option[value] to same value while having select open blinks select dropdown in Chrome
-					if (vnode$$1.tag === "option" && old != null && vnode$$1.dom.value === normalized) return
+					if (vnode.tag === "option" && old != null && vnode.dom.value === normalized) return
 				}
 				// If you assign an input type that is not supported by IE 11 with an assignment expression, an error will occur.
-				if (vnode$$1.tag === "input" && key === "type") {
+				if (vnode.tag === "input" && key === "type") {
 					element.setAttribute(key, value);
 					return
 				}
@@ -988,31 +985,31 @@
 				else element.setAttribute(key === "className" ? "class" : key, value);
 			}
 		}
-		function setLateAttrs(vnode$$1) {
-			var attrs = vnode$$1.attrs;
-			if (vnode$$1.tag === "select" && attrs != null) {
-				if ("value" in attrs) setAttr(vnode$$1, "value", null, attrs.value, undefined);
-				if ("selectedIndex" in attrs) setAttr(vnode$$1, "selectedIndex", null, attrs.selectedIndex, undefined);
+		function setLateAttrs(vnode) {
+			var attrs = vnode.attrs;
+			if (vnode.tag === "select" && attrs != null) {
+				if ("value" in attrs) setAttr(vnode, "value", null, attrs.value, undefined);
+				if ("selectedIndex" in attrs) setAttr(vnode, "selectedIndex", null, attrs.selectedIndex, undefined);
 			}
 		}
-		function updateAttrs(vnode$$1, old, attrs, ns) {
+		function updateAttrs(vnode, old, attrs, ns) {
 			if (attrs != null) {
 				for (var key in attrs) {
-					setAttr(vnode$$1, key, old && old[key], attrs[key], ns);
+					setAttr(vnode, key, old && old[key], attrs[key], ns);
 				}
 			}
 			if (old != null) {
 				for (var key in old) {
 					if (attrs == null || !(key in attrs)) {
 						if (key === "className") key = "class";
-						if (key[0] === "o" && key[1] === "n" && !isLifecycleMethod(key)) updateEvent(vnode$$1, key, undefined);
-						else if (key !== "key") vnode$$1.dom.removeAttribute(key);
+						if (key[0] === "o" && key[1] === "n" && !isLifecycleMethod(key)) updateEvent(vnode, key, undefined);
+						else if (key !== "key") vnode.dom.removeAttribute(key);
 					}
 				}
 			}
 		}
-		function isFormAttribute(vnode$$1, attr) {
-			return attr === "value" || attr === "checked" || attr === "selectedIndex" || attr === "selected" && vnode$$1.dom === $doc.activeElement || vnode$$1.tag === "option" && vnode$$1.dom.parentNode === $doc.activeElement
+		function isFormAttribute(vnode, attr) {
+			return attr === "value" || attr === "checked" || attr === "selectedIndex" || attr === "selected" && vnode.dom === $doc.activeElement || vnode.tag === "option" && vnode.dom.parentNode === $doc.activeElement
 		}
 		function isLifecycleMethod(attr) {
 			return attr === "oninit" || attr === "oncreate" || attr === "onupdate" || attr === "onremove" || attr === "onbeforeremove" || attr === "onbeforeupdate"
@@ -1020,8 +1017,8 @@
 		function isAttribute(attr) {
 			return attr === "href" || attr === "list" || attr === "form" || attr === "width" || attr === "height"// || attr === "type"
 		}
-		function isCustomElement(vnode$$1){
-			return vnode$$1.attrs.is || vnode$$1.tag.indexOf("-") > -1
+		function isCustomElement(vnode){
+			return vnode.attrs.is || vnode.tag.indexOf("-") > -1
 		}
 		function hasIntegrationMethods(source) {
 			return source != null && (source.oncreate || source.onupdate || source.onbeforeremove || source.onremove)
@@ -1071,43 +1068,43 @@
 		};
 
 		//event
-		function updateEvent(vnode$$1, key, value) {
-			if (vnode$$1.events != null) {
-				if (vnode$$1.events[key] === value) return
+		function updateEvent(vnode, key, value) {
+			if (vnode.events != null) {
+				if (vnode.events[key] === value) return
 				if (value != null && (typeof value === "function" || typeof value === "object")) {
-					if (vnode$$1.events[key] == null) vnode$$1.dom.addEventListener(key.slice(2), vnode$$1.events, false);
-					vnode$$1.events[key] = value;
+					if (vnode.events[key] == null) vnode.dom.addEventListener(key.slice(2), vnode.events, false);
+					vnode.events[key] = value;
 				} else {
-					if (vnode$$1.events[key] != null) vnode$$1.dom.removeEventListener(key.slice(2), vnode$$1.events, false);
-					vnode$$1.events[key] = undefined;
+					if (vnode.events[key] != null) vnode.dom.removeEventListener(key.slice(2), vnode.events, false);
+					vnode.events[key] = undefined;
 				}
 			} else if (value != null && (typeof value === "function" || typeof value === "object")) {
-				vnode$$1.events = new EventDict();
-				vnode$$1.dom.addEventListener(key.slice(2), vnode$$1.events, false);
-				vnode$$1.events[key] = value;
+				vnode.events = new EventDict();
+				vnode.dom.addEventListener(key.slice(2), vnode.events, false);
+				vnode.events[key] = value;
 			}
 		}
 
 		//lifecycle
-		function initLifecycle(source, vnode$$1, hooks) {
-			if (typeof source.oninit === "function") callHook.call(source.oninit, vnode$$1);
-			if (typeof source.oncreate === "function") hooks.push(callHook.bind(source.oncreate, vnode$$1));
+		function initLifecycle(source, vnode, hooks) {
+			if (typeof source.oninit === "function") callHook.call(source.oninit, vnode);
+			if (typeof source.oncreate === "function") hooks.push(callHook.bind(source.oncreate, vnode));
 		}
-		function updateLifecycle(source, vnode$$1, hooks) {
-			if (typeof source.onupdate === "function") hooks.push(callHook.bind(source.onupdate, vnode$$1));
+		function updateLifecycle(source, vnode, hooks) {
+			if (typeof source.onupdate === "function") hooks.push(callHook.bind(source.onupdate, vnode));
 		}
-		function shouldNotUpdate(vnode$$1, old) {
+		function shouldNotUpdate(vnode, old) {
 			var forceVnodeUpdate, forceComponentUpdate;
-			if (vnode$$1.attrs != null && typeof vnode$$1.attrs.onbeforeupdate === "function") {
-				forceVnodeUpdate = callHook.call(vnode$$1.attrs.onbeforeupdate, vnode$$1, old);
+			if (vnode.attrs != null && typeof vnode.attrs.onbeforeupdate === "function") {
+				forceVnodeUpdate = callHook.call(vnode.attrs.onbeforeupdate, vnode, old);
 			}
-			if (typeof vnode$$1.tag !== "string" && typeof vnode$$1.state.onbeforeupdate === "function") {
-				forceComponentUpdate = callHook.call(vnode$$1.state.onbeforeupdate, vnode$$1, old);
+			if (typeof vnode.tag !== "string" && typeof vnode.state.onbeforeupdate === "function") {
+				forceComponentUpdate = callHook.call(vnode.state.onbeforeupdate, vnode, old);
 			}
 			if (!(forceVnodeUpdate === undefined && forceComponentUpdate === undefined) && !forceVnodeUpdate && !forceComponentUpdate) {
-				vnode$$1.dom = old.dom;
-				vnode$$1.domSize = old.domSize;
-				vnode$$1.instance = old.instance;
+				vnode.dom = old.dom;
+				vnode.domSize = old.domSize;
+				vnode.instance = old.instance;
 				return true
 			}
 			return false
@@ -1123,7 +1120,7 @@
 			if (dom.vnodes == null) dom.textContent = "";
 
 			if (!Array.isArray(vnodes)) vnodes = [vnodes];
-			updateNodes(dom, dom.vnodes, vnode.normalizeChildren(vnodes), false, hooks, null, namespace === "http://www.w3.org/1999/xhtml" ? undefined : namespace);
+			updateNodes(dom, dom.vnodes, Vnode.normalizeChildren(vnodes), false, hooks, null, namespace === "http://www.w3.org/1999/xhtml" ? undefined : namespace);
 			dom.vnodes = vnodes;
 			// document.activeElement can return null in IE https://developer.mozilla.org/en-US/docs/Web/API/Document/activeElement
 			if (active != null && $doc.activeElement !== active) active.focus();
@@ -1131,7 +1128,7 @@
 		}
 
 		return {render: render, setEventCallback: setEventCallback}
-	};
+	}
 
 	function throttle(callback) {
 		//60fps translates to 16.6ms, round it down since setTimeout requires int
@@ -1549,7 +1546,7 @@
 		var route = function(root, defaultRoute, routes) {
 			if (root == null) throw new Error("Ensure the DOM element that was passed to `m.route` is not undefined")
 			function run() {
-				if (render != null) redrawService.render(root, render(vnode(component, attrs.key, attrs)));
+				if (render != null) redrawService.render(root, render(Vnode(component, attrs.key, attrs)));
 			}
 			var redraw = function() {
 				run();
@@ -1589,9 +1586,9 @@
 		};
 		route.get = function() {return currentPath};
 		route.prefix = function(prefix) {routeService.prefix = prefix;};
-		var link = function(options, vnode$$1) {
-			vnode$$1.dom.setAttribute("href", routeService.prefix + vnode$$1.attrs.href);
-			vnode$$1.dom.onclick = function(e) {
+		var link = function(options, vnode) {
+			vnode.dom.setAttribute("href", routeService.prefix + vnode.attrs.href);
+			vnode.dom.onclick = function(e) {
 				if (e.ctrlKey || e.metaKey || e.shiftKey || e.which === 2) return
 				e.preventDefault();
 				e.redraw = false;
@@ -1622,21 +1619,21 @@
 
 	requestService.setCompletionCallback(redrawService.redraw);
 
-	hyperscript_1.version = "bleeding-edge";
+	hyperscript.version = "bleeding-edge";
 
-	hyperscript_1.PromisePolyfill = PromisePolyfill;
+	hyperscript.PromisePolyfill = PromisePolyfill;
 
-	hyperscript_1.buildQueryString = buildQueryString;
-	hyperscript_1.jsonp = requestService.jsonp;
-	hyperscript_1.mount = mount$1;
-	hyperscript_1.parseQueryString = parseQueryString;
-	hyperscript_1.redraw = redrawService.redraw;
-	hyperscript_1.render = render$1;
-	hyperscript_1.request = requestService.request;
-	hyperscript_1.route = route;
-	hyperscript_1.vnode = vnode;
-	hyperscript_1.withAttr = withAttr;
+	hyperscript.buildQueryString = buildQueryString;
+	hyperscript.jsonp = requestService.jsonp;
+	hyperscript.mount = mount$1;
+	hyperscript.parseQueryString = parseQueryString;
+	hyperscript.redraw = redrawService.redraw;
+	hyperscript.render = render$1;
+	hyperscript.request = requestService.request;
+	hyperscript.route = route;
+	hyperscript.vnode = Vnode;
+	hyperscript.withAttr = withAttr;
 
-	return hyperscript_1;
+	return hyperscript;
 
 })));

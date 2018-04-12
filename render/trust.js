@@ -1,8 +1,6 @@
-"use strict"
+import Vnode from "../render/vnode.js"
 
-var Vnode = require("../render/vnode")
-
-module.exports = function(html) {
+export default function(html) {
 	if (html == null) html = ""
 	return Vnode("<", undefined, undefined, html, undefined, undefined)
 }

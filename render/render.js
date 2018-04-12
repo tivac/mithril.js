@@ -1,8 +1,6 @@
-"use strict"
+import Vnode from "../render/vnode.js"
 
-var Vnode = require("../render/vnode")
-
-module.exports = function($window) {
+export default function($window) {
 	var $doc = $window.document
 	var $emptyFragment = $doc.createDocumentFragment()
 
