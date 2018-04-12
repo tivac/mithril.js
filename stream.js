@@ -1,3 +1,1 @@
-"use strict"
-
-module.exports = require("./stream/stream")
+export {default} from "./stream/strea.js"
