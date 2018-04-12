@@ -1,3 +1,3 @@
-"use strict"
+import redraw from "./api/redraw.js"
 
-module.exports = require("./api/redraw")(window)
+export default redraw(window)

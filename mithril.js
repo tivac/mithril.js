@@ -1185,9 +1185,13 @@
 		return {subscribe: subscribe, unsubscribe: unsubscribe, redraw: redraw, render: renderService.render}
 	};
 
-	var redraw$1 = redraw(window);
+	var redrawService = redraw(window)
 
-	var mount$1 = mount(redraw$1)
+	var redraw$1 = /*#__PURE__*/Object.freeze({
+		default: redrawService
+	});
+
+	var mount$1 = mount(redrawService)
 
 	function parseQueryString(string) {
 		if (string === "" || string == null) return {}
@@ -1236,6 +1240,9 @@
 	}
 
 	var promise = createCommonjsModule(function (module) {
+
+
+
 	if (typeof window !== "undefined") {
 		if (typeof window.Promise === "undefined") {
 			window.Promise = polyfill;
@@ -1621,7 +1628,9 @@
 		return route
 	};
 
-	var route = router$1(window, redraw$1);
+	var redrawService$1 = ( redraw$1 && redrawService ) || redraw$1;
+
+	var route = router$1(window, redrawService$1);
 
 	var withAttr = function(attrName, callback, context) {
 		return function(e) {
@@ -1629,7 +1638,7 @@
 		}
 	};
 
-	request$1.setCompletionCallback(redraw$1.redraw);
+	request$1.setCompletionCallback(redrawService.redraw);
 
 	hyperscript_1$1.version = "bleeding-edge";
 
@@ -1639,7 +1648,7 @@
 	hyperscript_1$1.jsonp = request$1.jsonp;
 	hyperscript_1$1.mount = mount$1;
 	hyperscript_1$1.parseQueryString = parseQueryString;
-	hyperscript_1$1.redraw = redraw$1.redraw;
+	hyperscript_1$1.redraw = redrawService.redraw;
 	hyperscript_1$1.render = render$1;
 	hyperscript_1$1.request = request$1.request;
 	hyperscript_1$1.route = route;
