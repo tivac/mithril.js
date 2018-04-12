@@ -1243,11 +1243,9 @@
 
 	var Promise = out
 
-	var buildQueryString$1 = ( build && buildQueryString ) || build;
-
 	var FILE_PROTOCOL_REGEX = new RegExp("^file://", "i");
 
-	var request = function($window, Promise) {
+	function request($window, Promise) {
 		var callbackCount = 0;
 
 		var oncompletion;
@@ -1395,7 +1393,7 @@
 		}
 
 		function assemble(url, data) {
-			var querystring = buildQueryString$1(data);
+			var querystring = buildQueryString(data);
 			if (querystring !== "") {
 				var prefix = url.indexOf("?") < 0 ? "?" : "&";
 				url += prefix + querystring;
@@ -1423,9 +1421,11 @@
 		}
 
 		return {request: request, jsonp: jsonp, setCompletionCallback: setCompletionCallback}
-	};
+	}
 
 	var requestService = request(window, Promise)
+
+	var buildQueryString$1 = ( build && buildQueryString ) || build;
 
 	var parseQueryString$1 = ( parse && parseQueryString ) || parse;
 
