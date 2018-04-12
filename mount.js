@@ -1,5 +1,4 @@
-"use strict"
+import mount from "./api/mount.js"
+import redrawService from "./redraw.js"
 
-var redrawService = require("./redraw")
-
-module.exports = require("./api/mount")(redrawService)
+export default mount(redrawService)

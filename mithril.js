@@ -290,6 +290,24 @@
 		default: buildQueryString
 	});
 
+	var mount = function(redrawService) {
+		return function(root, component) {
+			if (component === null) {
+				redrawService.render(root, []);
+				redrawService.unsubscribe(root);
+				return
+			}
+			
+			if (component.view == null && typeof component !== "function") throw new Error("m.mount(element, component) expects a component, not a vnode")
+			
+			var run = function() {
+				redrawService.render(root, vnode(component));
+			};
+			redrawService.subscribe(root, run);
+			run();
+		}
+	};
+
 	var render = function($window) {
 		var $doc = $window.document;
 		var $emptyFragment = $doc.createDocumentFragment();
@@ -1169,25 +1187,7 @@
 
 	var redraw$1 = redraw(window);
 
-	var mount = function(redrawService) {
-		return function(root, component) {
-			if (component === null) {
-				redrawService.render(root, []);
-				redrawService.unsubscribe(root);
-				return
-			}
-			
-			if (component.view == null && typeof component !== "function") throw new Error("m.mount(element, component) expects a component, not a vnode")
-			
-			var run = function() {
-				redrawService.render(root, vnode(component));
-			};
-			redrawService.subscribe(root, run);
-			run();
-		}
-	};
-
-	var mount$1 = mount(redraw$1);
+	var mount$1 = mount(redraw$1)
 
 	function parseQueryString(string) {
 		if (string === "" || string == null) return {}
