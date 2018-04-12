@@ -279,10 +279,6 @@
 		}
 	}
 
-	var build = /*#__PURE__*/Object.freeze({
-		default: buildQueryString
-	});
-
 	function mount(redrawService) {
 		return function(root, component) {
 			if (component === null) {
@@ -1215,10 +1211,6 @@
 		return data
 	}
 
-	var parse = /*#__PURE__*/Object.freeze({
-		default: parseQueryString
-	});
-
 	var render$1 = render(window)
 
 	let out;
@@ -1425,11 +1417,7 @@
 
 	var requestService = request(window, Promise)
 
-	var buildQueryString$1 = ( build && buildQueryString ) || build;
-
-	var parseQueryString$1 = ( parse && parseQueryString ) || parse;
-
-	var router = function($window) {
+	function coreRouter($window) {
 		var supportsPushState = typeof $window.history.pushState === "function";
 		var callAsync = typeof setImmediate === "function" ? setImmediate : setTimeout;
 
@@ -1456,11 +1444,11 @@
 			var pathEnd = queryIndex > -1 ? queryIndex : hashIndex > -1 ? hashIndex : path.length;
 			if (queryIndex > -1) {
 				var queryEnd = hashIndex > -1 ? hashIndex : path.length;
-				var queryParams = parseQueryString$1(path.slice(queryIndex + 1, queryEnd));
+				var queryParams = parseQueryString(path.slice(queryIndex + 1, queryEnd));
 				for (var key in queryParams) queryData[key] = queryParams[key];
 			}
 			if (hashIndex > -1) {
-				var hashParams = parseQueryString$1(path.slice(hashIndex + 1));
+				var hashParams = parseQueryString(path.slice(hashIndex + 1));
 				for (var key in hashParams) hashData[key] = hashParams[key];
 			}
 			return path.slice(0, pathEnd)
@@ -1486,10 +1474,10 @@
 				});
 			}
 
-			var query = buildQueryString$1(queryData);
+			var query = buildQueryString(queryData);
 			if (query) path += "?" + query;
 
-			var hash = buildQueryString$1(hashData);
+			var hash = buildQueryString(hashData);
 			if (hash) path += "#" + hash;
 
 			if (supportsPushState) {
@@ -1536,10 +1524,10 @@
 		};
 
 		return router
-	};
+	}
 
-	function router$1($window, redrawService) {
-		var routeService = router($window);
+	function router($window, redrawService) {
+		var routeService = coreRouter($window);
 
 		var identity = function(v) {return v};
 		var render, component, attrs, currentPath, lastUpdate;
@@ -1609,7 +1597,7 @@
 		return route
 	}
 
-	var route = router$1(window, redrawService)
+	var route = router(window, redrawService)
 
 	var withAttr = function(attrName, callback, context) {
 		return function(e) {
