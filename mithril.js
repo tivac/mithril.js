@@ -257,8 +257,6 @@
 		})
 	};
 
-	var polyfill = PromisePolyfill;
-
 	function buildQueryString(object) {
 		if (Object.prototype.toString.call(object) !== "[object Object]") return ""
 
@@ -1226,34 +1224,27 @@
 
 	var render$1 = render(window)
 
-	var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-	function createCommonjsModule(fn, module) {
-		return module = { exports: {} }, fn(module, module.exports), module.exports;
-	}
-
-	var promise = createCommonjsModule(function (module) {
-
-
+	let out;
 
 	if (typeof window !== "undefined") {
 		if (typeof window.Promise === "undefined") {
-			window.Promise = polyfill;
+			window.Promise = PromisePolyfill;
 		} else if (!window.Promise.prototype.finally) {
-			window.Promise.prototype.finally = polyfill.prototype.finally;
+			window.Promise.prototype.finally = PromisePolyfill.prototype.finally;
 		}
-		module.exports = window.Promise;
-	} else if (typeof commonjsGlobal !== "undefined") {
-		if (typeof commonjsGlobal.Promise === "undefined") {
-			commonjsGlobal.Promise = polyfill;
-		} else if (!commonjsGlobal.Promise.prototype.finally) {
-			commonjsGlobal.Promise.prototype.finally = polyfill.prototype.finally;
+		out = window.Promise;
+	} else if (typeof global !== "undefined") {
+		if (typeof global.Promise === "undefined") {
+			global.Promise = PromisePolyfill;
+		} else if (!global.Promise.prototype.finally) {
+			global.Promise.prototype.finally = PromisePolyfill.prototype.finally;
 		}
-		module.exports = commonjsGlobal.Promise;
+		out = global.Promise;
 	} else {
-		module.exports = polyfill;
+		out = PromisePolyfill;
 	}
-	});
+
+	var Promise = out
 
 	var buildQueryString$1 = ( build && buildQueryString ) || build;
 
@@ -1437,7 +1428,7 @@
 		return {request: request, jsonp: jsonp, setCompletionCallback: setCompletionCallback}
 	};
 
-	var requestService = request(window, promise)
+	var requestService = request(window, Promise)
 
 	var parseQueryString$1 = ( parse && parseQueryString ) || parse;
 
@@ -1580,7 +1571,7 @@
 				if (payload.view || typeof payload === "function") update({}, payload);
 				else {
 					if (payload.onmatch) {
-						promise.resolve(payload.onmatch(params, path)).then(function(resolved) {
+						Promise.resolve(payload.onmatch(params, path)).then(function(resolved) {
 							update(payload, resolved);
 						}, bail);
 					}
@@ -1633,7 +1624,7 @@
 
 	hyperscript_1.version = "bleeding-edge";
 
-	hyperscript_1.PromisePolyfill = polyfill;
+	hyperscript_1.PromisePolyfill = PromisePolyfill;
 
 	hyperscript_1.buildQueryString = buildQueryString;
 	hyperscript_1.jsonp = requestService.jsonp;

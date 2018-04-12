@@ -109,4 +109,4 @@ PromisePolyfill.race = function(list) {
 	})
 }
 
-module.exports = PromisePolyfill
+export default PromisePolyfill

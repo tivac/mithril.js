@@ -1,6 +1,6 @@
-"use strict"
+import PromisePolyfill from "./polyfill.js"
 
-var PromisePolyfill = require("./polyfill")
+let out;
 
 if (typeof window !== "undefined") {
 	if (typeof window.Promise === "undefined") {
@@ -8,14 +8,16 @@ if (typeof window !== "undefined") {
 	} else if (!window.Promise.prototype.finally) {
 		window.Promise.prototype.finally = PromisePolyfill.prototype.finally
 	}
-	module.exports = window.Promise
+	out = window.Promise
 } else if (typeof global !== "undefined") {
 	if (typeof global.Promise === "undefined") {
 		global.Promise = PromisePolyfill
 	} else if (!global.Promise.prototype.finally) {
 		global.Promise.prototype.finally = PromisePolyfill.prototype.finally
 	}
-	module.exports = global.Promise
+	out = global.Promise
 } else {
-	module.exports = PromisePolyfill
+	out = PromisePolyfill
 }
+
+export default out
