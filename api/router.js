@@ -1,10 +1,8 @@
-"use strict"
+import Promise from "../promise/promise.js"
+import Vnode from "../render/vnode.js"
+import coreRouter from "../router/router.js"
 
-var Vnode = require("../render/vnode")
-var Promise = require("../promise/promise")
-var coreRouter = require("../router/router")
-
-module.exports = function($window, redrawService) {
+export default function($window, redrawService) {
 	var routeService = coreRouter($window)
 
 	var identity = function(v) {return v}

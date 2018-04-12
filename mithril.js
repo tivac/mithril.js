@@ -1550,7 +1550,7 @@
 		return router
 	};
 
-	var router$1 = function($window, redrawService) {
+	function router$1($window, redrawService) {
 		var routeService = router($window);
 
 		var identity = function(v) {return v};
@@ -1619,7 +1619,7 @@
 		};
 
 		return route
-	};
+	}
 
 	var route = router$1(window, redrawService)
 
