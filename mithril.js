@@ -1444,7 +1444,7 @@
 		return {request: request, jsonp: jsonp, setCompletionCallback: setCompletionCallback}
 	};
 
-	var request$1 = request(window, promise);
+	var requestService = request(window, promise)
 
 	var parseQueryString$1 = ( parse && parseQueryString ) || parse;
 
@@ -1638,19 +1638,19 @@
 		}
 	};
 
-	request$1.setCompletionCallback(redrawService.redraw);
+	requestService.setCompletionCallback(redrawService.redraw);
 
 	hyperscript_1$1.version = "bleeding-edge";
 
 	hyperscript_1$1.PromisePolyfill = polyfill;
 
 	hyperscript_1$1.buildQueryString = buildQueryString;
-	hyperscript_1$1.jsonp = request$1.jsonp;
+	hyperscript_1$1.jsonp = requestService.jsonp;
 	hyperscript_1$1.mount = mount$1;
 	hyperscript_1$1.parseQueryString = parseQueryString;
 	hyperscript_1$1.redraw = redrawService.redraw;
 	hyperscript_1$1.render = render$1;
-	hyperscript_1$1.request = request$1.request;
+	hyperscript_1$1.request = requestService.request;
 	hyperscript_1$1.route = route;
 	hyperscript_1$1.vnode = vnode;
 	hyperscript_1$1.withAttr = withAttr;

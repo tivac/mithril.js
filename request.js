@@ -1,4 +1,4 @@
-"use strict"
+import PromisePolyfill from "./promise/promise.js"
+import request from "./request/request.js"
 
-var PromisePolyfill = require("./promise/promise")
-module.exports = require("./request/request")(window, PromisePolyfill)
+export default request(window, PromisePolyfill)
